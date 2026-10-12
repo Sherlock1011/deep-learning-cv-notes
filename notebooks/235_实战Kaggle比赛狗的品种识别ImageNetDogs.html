@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>235_实战Kaggle比赛狗的品种识别ImageNetDogs</title>
+<style>
+body {
+  margin: 0;
+  color: #18212f;
+  background: #eef3f8;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  line-height: 1.7;
+}
+main {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 34px 28px 80px;
+  background: #fff;
+  min-height: 100vh;
+  border-left: 1px solid #d8dee8;
+  border-right: 1px solid #d8dee8;
+}
+a { color: #2563eb; text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1, h2, h3, h4 { line-height: 1.25; margin-top: 1.45em; letter-spacing: 0; }
+h1 {
+  margin-top: 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #d8dee8;
+  font-size: clamp(28px, 4vw, 42px);
+}
+h2 {
+  margin-top: 42px;
+  padding: 12px 14px;
+  border-left: 5px solid #2563eb;
+  background: #f3f6fb;
+  border-radius: 8px;
+  font-size: 25px;
+}
+h3 { color: #28364a; }
+p {
+  margin: 10px 0 14px;
+  max-width: 820px;
+}
+img {
+  display: block;
+  max-width: min(100%, 900px);
+  height: auto;
+  margin: 14px auto;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+}
+table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+th, td { border: 1px solid #d8dee8; padding: 8px 10px; text-align: left; }
+blockquote { border-left: 4px solid #bfd0ea; margin-left: 0; padding: 6px 16px; color: #4d5868; background: #f3f6fb; }
+pre {
+  overflow-x: auto;
+  background: #0f172a;
+  color: #e5e7eb;
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-family: "Cascadia Mono", Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.55;
+}
+code {
+  font-family: "Cascadia Mono", Consolas, monospace;
+  background: #eef3fb;
+  border-radius: 5px;
+  padding: 1px 5px;
+}
+pre code { background: transparent; padding: 0; }
+.top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.top a {
+  display: inline-block;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 6px 10px;
+  background: #f7f9fc;
+}
+.reader-note {
+  color: #4d5868;
+  background: #f8fafc;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 18px 0 24px;
+}
+.toc {
+  background: #ffffff;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 18px 0 28px;
+}
+.toc strong {
+  display: block;
+  margin-bottom: 8px;
+}
+.toc a {
+  display: inline-block;
+  margin: 3px 12px 3px 0;
+  color: #28364a;
+}
+.cell {
+  margin: 20px 0;
+}
+.markdown-cell {
+  font-size: 16px;
+  max-width: 900px;
+}
+.markdown-cell > :first-child { margin-top: 0; }
+.markdown-cell > :last-child { margin-bottom: 0; }
+.markdown-cell li { margin: 4px 0; }
+.markdown-cell strong { color: #0f172a; }
+.heading-cell {
+  max-width: 100%;
+}
+.step-cell {
+  position: relative;
+  max-width: 900px;
+  margin: 16px 0;
+  padding: 16px 18px 16px 58px;
+  background: #fbfcff;
+  border: 1px solid #d8dee8;
+  border-left: 5px solid #12805c;
+  border-radius: 8px;
+}
+.step-cell .step-badge {
+  position: absolute;
+  left: 16px;
+  top: 15px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: #12805c;
+  font-weight: 700;
+  line-height: 1;
+}
+.step-cell p {
+  margin: 0 0 8px;
+  max-width: 780px;
+}
+.figure-cell {
+  max-width: 100%;
+  margin: 12px 0 26px;
+}
+.figure-cell p {
+  max-width: 100%;
+}
+.markdown-cell hr {
+  border: 0;
+  border-top: 1px solid #d8dee8;
+  margin: 28px 0;
+}
+.code-cell {
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+.code-head {
+  font-size: 13px;
+  color: #5e6878;
+  background: #eef3fb;
+  padding: 6px 10px;
+  border-bottom: 1px solid #d8dee8;
+}
+.code-cell pre { margin: 0; border-radius: 0; }
+.output {
+  border-top: 1px solid #d8dee8;
+  padding: 10px 12px;
+  background: #fbfcff;
+}
+.output pre {
+  background: #f3f6fb;
+  color: #18212f;
+  margin: 0;
+}
+.output img { box-shadow: none; }
+.inline-code {
+  font-family: "Cascadia Mono", Consolas, monospace;
+  color: #0f172a;
+  background: #eef3fb;
+  border: 1px solid #d8dee8;
+  border-radius: 5px;
+  padding: 1px 5px;
+  word-break: break-word;
+}
+@media (max-width: 760px) {
+  main { padding: 24px 16px 56px; border: 0; }
+  .top { flex-direction: column; align-items: stretch; }
+  .top a { text-align: center; }
+}
+</style>
+</head>
+<body>
+<main>
+<div class="top"><a href="../index.html">返回讲义目录</a><a href="https://github.com/AccumulateMore/CV/tree/main">原始 notebook 目录</a></div>
+<h1>235_实战Kaggle比赛狗的品种识别ImageNetDogs</h1>
+<div class="reader-note">这页由原始 Jupyter Notebook 转为浏览器阅读版：步骤说明会以绿色提示块展示，截图已内嵌到页面中，代码和命令会用深色或浅色代码样式区分。</div>
+
+<section id="section-1" class="cell markdown-cell heading-cell"><h2 id="1-kaggleimagenetdogs">1. 实战Kaggle比赛狗的品种识别ImageNetDogs</h2></section>
+<section class="cell markdown-cell step-cell"><span class="step-badge">①</span><p>比赛网址是 https://www.kaggle.com/c/dog-breed-identification</p></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>import os
+import torch
+import torchvision
+from torch import nn
+from d2l import torch as d2l</code></pre></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>d2l.DATA_HUB[&#x27;dog_tiny&#x27;] = (d2l.DATA_URL + &#x27;kaggle_dog_tiny.zip&#x27;,
+                           &#x27;0cb91d09b814ecdc07b50f31f8dcad3e816a86d&#x27;)
+
+demo = True
+if demo:
+    data_dir = d2l.download_extract(&#x27;dog_tiny&#x27;)
+else:
+    data_dir = os.path_join(&#x27;..&#x27;,&#x27;data&#x27;,&#x27;dog_breed-identification&#x27;)</code></pre><div class="output"><pre>Downloading ..\data\kaggle_dog_tiny.zip from http://d2l-data.s3-accelerate.amazonaws.com/kaggle_dog_tiny.zip...
+</pre></div></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 整理数据集
+def reorg_dog_data(data_dir, valid_ratio):
+    labels = d2l.read_csv_labels(os.path.join(data_dir,&#x27;labels.csv&#x27;))
+    d2l.reorg_train_valid(data_dir,labels,valid_ratio)
+    d2l.reorg_test(data_dir)
+    
+batch_size = 32 if demo else 128
+valid_ratio = 0.1
+reorg_dog_data(data_dir, valid_ratio)</code></pre></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 图像增广
+transform_train = torchvision.transforms.Compose([
+    torchvision.transforms.RandomResizedCrop(224,scale=(0.08,1.0),ratio=(3.0/4.0, 4.0/3.0)),
+    torchvision.transforms.RandomHorizontalFlip(),
+    torchvision.transforms.ColorJitter(brightness=0.4,contrast=0.4,saturation=0.4),
+    torchvision.transforms.ToTensor(),
+    torchvision.transforms.Normalize([0.485,0.456,0.406],
+                                    [0.229,0.224,0.225])])
+
+transform_test = torchvision.transforms.Compose([
+    torchvision.transforms.Resize(256),
+    torchvision.transforms.CenterCrop(224),
+    torchvision.transforms.ToTensor(),
+    torchvision.transforms.Normalize([0.485,0.456,0.406],
+                                     [0.229,0.224,0.225])])</code></pre></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>train_ds, train_valid_ds = [
+    torchvision.datasets.ImageFolder(
+        os.path.join(data_dir,&#x27;train_valid_test&#x27;,folder),
+        transform=transform_train) for folder in [&#x27;train&#x27;,&#x27;train_valid&#x27;]]       
+
+valid_ds, test_ds = [
+    torchvision.datasets.ImageFolder(
+    os.path.join(data_dir,&#x27;train_valid_test&#x27;,folder),
+    transform=transform_test) for folder in [&#x27;valid&#x27;,&#x27;test&#x27;]]
+
+train_iter, train_valid_iter = [
+    torch.utils.data.DataLoader(dataset,batch_size,shuffle=True,drop_last=True) for dataset in (train_ds, train_valid_ds)]
+
+valid_iter = torch.utils.data.DataLoader(valid_ds,batch_size,shuffle=False,drop_last=True)
+test_iter = torch.utils.data.DataLoader(test_ds,batch_size,shuffle=False,drop_last=False)        </code></pre></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 微调预训练模型
+# 除了最后一层外，前面的层固定住参数不变
+def get_net(device):
+    finetune_net = nn.Sequential()
+    finetune_net.features = torchvision.models.resnet34(pretrained=True)
+    print(&quot;finetune_net：&quot;, finetune_net)
+    finetune_net.output_new = nn.Sequential(nn.Linear(1000,256),nn.ReLU(),nn.Linear(256,120)) #  在原始网络后又加了一层 
+    print(&quot;finetune_net：&quot;, finetune_net)
+    finetune_net = finetune_net.to(devices[0])
+    for param in finetune_net.features.parameters(): # 遍历features的所有参数
+        param.requires_grad = False  
+    return finetune_net # 返回整个网络，这个网络中原始层的参数固定住了，保持不变</code></pre></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 计算损失
+loss = nn.CrossEntropyLoss(reduction=&#x27;none&#x27;)
+
+def evaluate_loss(data_iter, net, devices):
+    l_sum, n = 0.0, 0
+    for features, labels in data_iter:
+        features, labels = features.to(devices[0]), labels.to(devices[0])
+        outputs = net(features)
+        l = loss(outputs, labels)
+        l_sum += l.sum()
+        n += labels.numel()
+    return l_sum / n</code></pre></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 训练函数
+def train(net, train_iter, valid_iter, num_epochs, lr, wd, devices, lr_period,lr_decay):
+    net = nn.DataParallel(net,device_ids=devices).to(devices[0])
+    trainer = torch.optim.SGD(
+        (param for param in net.parameters() if param.requires_grad), 
+        lr = lr, momentum = 0.9, weight_decay=wd)
+    scheduler = torch.optim.lr_scheduler.StepLR(trainer, lr_period, lr_decay)
+    num_batches, timer = len(train_iter), d2l.Timer()
+    legend = [&#x27;train loss&#x27;]
+    if valid_iter is not None:
+        legend.append(&#x27;valid loss&#x27;)
+    animator = d2l.Animator(xlabel=&#x27;epoch&#x27;,xlim=[1,num_epochs],legend=legend)
+    
+    for epoch in range(num_epochs):
+        metric = d2l.Accumulator(2)
+        for i, (features, labels) in enumerate(train_iter):
+            timer.start()
+            features, labels = features.to(devices[0]), labels.to(devices[0])
+            trainer.zero_grad()
+            output = net(features)
+            l = loss(output, labels).sum()
+            l.backward()
+            trainer.step()
+            metric.add(l,labels.shape[0])
+            timer.stop()
+            if (i+1) % (num_batches // 5) == 0 or i == num_batches -1:
+                animator.add(epoch + (i+1) / num_batches,
+                             (metric[0] / metric[1], None))
+        measures = f&#x27;train loss {metric[0] / metric[1]:.3f}&#x27;
+        if valid_iter is not None:
+            valid_loss = evaluate_loss(valid_iter, net, devices)
+            animator.add(epoch + 1, (None, valid_loss.detach()))
+        scheduler.step()
+    if valid_iter is not None:
+        measures += f&#x27;, valid loss {valid_loss:.3f}&#x27;
+    print(measures + f&#x27;\n{metric[1] * num_epochs / timer.sum():.1f}&#x27;
+         f&#x27; examples/sec on {str(devices)}&#x27;)</code></pre></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>devices, num_epochs, lr, wd = d2l.try_all_gpus(), 10, 1e-4, 1e-4
+lr_period, lr_decay, net = 2, 0.9, get_net(devices)
+train(net, train_iter, valid_iter, num_epochs, lr, wd, devices, lr_period, lr_decay)   </code></pre><div class="output"><pre>train loss 1.119, valid loss 1.561
+569.0 examples/sec on [device(type=&#x27;cuda&#x27;, index=0)]
+</pre></div><div class="output"><pre>&lt;Figure size 252x180 with 1 Axes&gt;</pre></div></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>net = get_net(devices)
+train(net, train_valid_iter, None, num_epochs, lr, wd, devices, lr_period, lr_decay)   </code></pre><div class="output"><pre>train loss 1.068
+761.3 examples/sec on [device(type=&#x27;cuda&#x27;, index=0)]
+</pre></div><div class="output"><pre>&lt;Figure size 252x180 with 1 Axes&gt;</pre></div></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>preds = []
+for data, label in test_iter:
+    # 计算每一个样本对每一类的概率是多少
+    output = torch.nn.functional.softmax(net(data.to(devices[0])), dim=0)
+    preds.extend(output.cpu().detach().numpy())
+    print(len(preds))
+ids = sorted(os.listdir(os.path.join(data_dir, &#x27;train_valid_test&#x27;, &#x27;test&#x27;, &#x27;unknown&#x27;)))    
+with open(&#x27;submission.csv&#x27;,&#x27;w&#x27;) as f:
+    f.write(&#x27;id,&#x27; + &#x27;,&#x27;.join(train_valid_ds.classes)+&#x27;\n&#x27;)
+    for i, output in zip(ids, preds):
+        f.write(i.split(&#x27;.&#x27;)[0] + &#x27;,&#x27; + &#x27;,&#x27;.join([str(num) for num in output]) + &#x27;\n&#x27;)   </code></pre><div class="output"><pre>10
+</pre></div></section>
+</main>
+</body>
+</html>

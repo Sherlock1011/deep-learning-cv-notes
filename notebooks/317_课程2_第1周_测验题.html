@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>317_课程2_第1周_测验题</title>
+<style>
+body {
+  margin: 0;
+  color: #18212f;
+  background: #eef3f8;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  line-height: 1.7;
+}
+main {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 34px 28px 80px;
+  background: #fff;
+  min-height: 100vh;
+  border-left: 1px solid #d8dee8;
+  border-right: 1px solid #d8dee8;
+}
+a { color: #2563eb; text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1, h2, h3, h4 { line-height: 1.25; margin-top: 1.45em; letter-spacing: 0; }
+h1 {
+  margin-top: 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #d8dee8;
+  font-size: clamp(28px, 4vw, 42px);
+}
+h2 {
+  margin-top: 42px;
+  padding: 12px 14px;
+  border-left: 5px solid #2563eb;
+  background: #f3f6fb;
+  border-radius: 8px;
+  font-size: 25px;
+}
+h3 { color: #28364a; }
+p {
+  margin: 10px 0 14px;
+  max-width: 820px;
+}
+img {
+  display: block;
+  max-width: min(100%, 900px);
+  height: auto;
+  margin: 14px auto;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+}
+table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+th, td { border: 1px solid #d8dee8; padding: 8px 10px; text-align: left; }
+blockquote { border-left: 4px solid #bfd0ea; margin-left: 0; padding: 6px 16px; color: #4d5868; background: #f3f6fb; }
+pre {
+  overflow-x: auto;
+  background: #0f172a;
+  color: #e5e7eb;
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-family: "Cascadia Mono", Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.55;
+}
+code {
+  font-family: "Cascadia Mono", Consolas, monospace;
+  background: #eef3fb;
+  border-radius: 5px;
+  padding: 1px 5px;
+}
+pre code { background: transparent; padding: 0; }
+.top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.top a {
+  display: inline-block;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 6px 10px;
+  background: #f7f9fc;
+}
+.reader-note {
+  color: #4d5868;
+  background: #f8fafc;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 18px 0 24px;
+}
+.toc {
+  background: #ffffff;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 18px 0 28px;
+}
+.toc strong {
+  display: block;
+  margin-bottom: 8px;
+}
+.toc a {
+  display: inline-block;
+  margin: 3px 12px 3px 0;
+  color: #28364a;
+}
+.cell {
+  margin: 20px 0;
+}
+.markdown-cell {
+  font-size: 16px;
+  max-width: 900px;
+}
+.markdown-cell > :first-child { margin-top: 0; }
+.markdown-cell > :last-child { margin-bottom: 0; }
+.markdown-cell li { margin: 4px 0; }
+.markdown-cell strong { color: #0f172a; }
+.heading-cell {
+  max-width: 100%;
+}
+.step-cell {
+  position: relative;
+  max-width: 900px;
+  margin: 16px 0;
+  padding: 16px 18px 16px 58px;
+  background: #fbfcff;
+  border: 1px solid #d8dee8;
+  border-left: 5px solid #12805c;
+  border-radius: 8px;
+}
+.step-cell .step-badge {
+  position: absolute;
+  left: 16px;
+  top: 15px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: #12805c;
+  font-weight: 700;
+  line-height: 1;
+}
+.step-cell p {
+  margin: 0 0 8px;
+  max-width: 780px;
+}
+.figure-cell {
+  max-width: 100%;
+  margin: 12px 0 26px;
+}
+.figure-cell p {
+  max-width: 100%;
+}
+.markdown-cell hr {
+  border: 0;
+  border-top: 1px solid #d8dee8;
+  margin: 28px 0;
+}
+.code-cell {
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+.code-head {
+  font-size: 13px;
+  color: #5e6878;
+  background: #eef3fb;
+  padding: 6px 10px;
+  border-bottom: 1px solid #d8dee8;
+}
+.code-cell pre { margin: 0; border-radius: 0; }
+.output {
+  border-top: 1px solid #d8dee8;
+  padding: 10px 12px;
+  background: #fbfcff;
+}
+.output pre {
+  background: #f3f6fb;
+  color: #18212f;
+  margin: 0;
+}
+.output img { box-shadow: none; }
+.inline-code {
+  font-family: "Cascadia Mono", Consolas, monospace;
+  color: #0f172a;
+  background: #eef3fb;
+  border: 1px solid #d8dee8;
+  border-radius: 5px;
+  padding: 1px 5px;
+  word-break: break-word;
+}
+@media (max-width: 760px) {
+  main { padding: 24px 16px 56px; border: 0; }
+  .top { flex-direction: column; align-items: stretch; }
+  .top a { text-align: center; }
+}
+</style>
+</head>
+<body>
+<main>
+<div class="top"><a href="../index.html">返回讲义目录</a><a href="https://github.com/AccumulateMore/CV/tree/main">原始 notebook 目录</a></div>
+<h1>317_课程2_第1周_测验题</h1>
+<div class="reader-note">这页由原始 Jupyter Notebook 转为浏览器阅读版：步骤说明会以绿色提示块展示，截图已内嵌到页面中，代码和命令会用深色或浅色代码样式区分。</div>
+<nav class="toc"><strong>本节目录</strong><a href="#section-1">课程2第1周测验题</a><a href="#section-2">第一题</a><a href="#section-3">第二题</a><a href="#section-4">第三题</a><a href="#section-5">第四题</a><a href="#section-6">第五题</a><a href="#section-7">第六题</a><a href="#section-8">第七题</a><a href="#section-9">第八题</a><a href="#section-10">第九题</a><a href="#section-11">第十题</a></nav>
+<section id="section-1" class="cell markdown-cell heading-cell"><h2 id="2_1_"><strong><em>课程2_第1周_测验题</em></strong></h2></section>
+<section id="section-2" class="cell markdown-cell heading-cell"><h2 id="_1">第一题</h2></section>
+<section class="cell markdown-cell"><p>1.如果你有10,000,000个例子，你会如何划分训练/验证/测试集？</p>
+<p>A. 【  】33%训练，33%验证，33%测试</p>
+<p>B. 【  】60%训练，20%验证，20%测试</p>
+<p>C. 【  】98%训练，1%验证，20%测试</p></section>
+<section class="cell markdown-cell"><p>答案：  </p>
+<p>C.【 √ 】98%训练，1%验证，20%测试</p></section>
+<section id="section-3" class="cell markdown-cell heading-cell"><h2 id="_1">第二题</h2></section>
+<section class="cell markdown-cell"><p>2.验证集和测试集应该：</p>
+<p>A. 【  】来自同一分布</p>
+<p>B. 【  】来自不同分布</p>
+<p>C. 【  】完全相同（一样的(x, y)对）</p>
+<p>D. 【  】数据数量应该相同</p></section>
+<section class="cell markdown-cell"><p>答案：  </p>
+<p>A.【 √ 】来自同一分布</p></section>
+<section id="section-4" class="cell markdown-cell heading-cell"><h2 id="_1">第三题</h2></section>
+<section class="cell markdown-cell"><p>3.如果你的神经网络方差很高，下列哪个尝试是可能解决问题的？</p>
+<p>A. 【  】添加正则项</p>
+<p>B. 【  】获取更多测试数据</p>
+<p>C. 【  】增加每个隐藏层的神经元数量</p>
+<p>D. 【  】用更深的神经网络</p>
+<p>E. 【  】用更多的训练数据</p></section>
+<section class="cell markdown-cell"><p>答案：  </p>
+<p>A.【 √ 】添加正则项</p>
+<p>E.【 √ 】用更多的训练数据</p></section>
+<section id="section-5" class="cell markdown-cell heading-cell"><h2 id="_1">第四题</h2></section>
+<section class="cell markdown-cell"><p>4.你正在为苹果，香蕉和橘子制作分类器。 假设您的分类器在训练集上有0.5％的错误，以及验证集上有7％的错误。 以下哪项尝试是有希望改善你的分类器的分类效果的？</p>
+<p>A. 【  】增大正则化参数$\lambda$</p>
+<p>B. 【  】减小正则化参数$\lambda$</p>
+<p>C. 【  】获取更多训练数据</p>
+<p>D. 【  】用更大的神经网络</p></section>
+<section class="cell markdown-cell"><p>答案：  </p>
+<p>A.【 √ 】增大正则化参数$\lambda$</p>
+<p>C.【 √ 】获取更多训练数据</p></section>
+<section id="section-6" class="cell markdown-cell heading-cell"><h2 id="_1">第五题</h2></section>
+<section class="cell markdown-cell"><p>5.什么是权重衰减？</p>
+<p>A. 【  】正则化技术（例如L2正则化）导致梯度下降在每次迭代时权重收缩</p>
+<p>B. 【  】在训练过程中逐渐降低学习率的过程</p>
+<p>C. 【  】如果神经网络是在噪声数据下训练的，那么神经网络的权值会逐渐损坏</p>
+<p>D. 【  】通过对权重值设置上限来避免梯度消失的技术</p></section>
+<section class="cell markdown-cell"><p>答案：  </p>
+<p>A.【 √ 】正则化技术（例如L2正则化）导致梯度下降在每次迭代时权重收缩</p></section>
+<section id="section-7" class="cell markdown-cell heading-cell"><h2 id="_1">第六题</h2></section>
+<section class="cell markdown-cell"><p>6.当你增大正则化的超参数$\lambda$时会发生什么？</p>
+<p>A. 【  】权重变小（接近0）</p>
+<p>B. 【  】权重变大（远离0）</p>
+<p>C. 【  】2倍的$\lambda$导致2倍的权重</p>
+<p>D. 【  】每次迭代，梯度下降采取更大的步距（与$\lambda$成正比）</p></section>
+<section class="cell markdown-cell"><p>答案：  </p>
+<p>A.【 √ 】权重变小（接近0）</p></section>
+<section id="section-8" class="cell markdown-cell heading-cell"><h2 id="_1">第七题</h2></section>
+<section class="cell markdown-cell"><p>7.在测试时候使用dropout：</p>
+<p>A. 【  】不随机关闭神经元，但在训练中使用的计算中保留1 / keep_prob因子</p>
+<p>B. 【  】随机关闭神经元，在训练中使用的计算中保留1 / keep_prob因子</p>
+<p>C. 【  】随机关闭神经元，但不要在训练中使用的计算中保留1 / keep_prob因子</p>
+<p>D. 【  】不随机关闭神经元，也不要在训练中使用的计算中保留1 / keep_prob因子</p></section>
+<section class="cell markdown-cell"><p>答案：  </p>
+<p>D.【 √ 】不随机关闭神经元，也不要在训练中使用的计算中保留1 / keep_prob因子</p></section>
+<section id="section-9" class="cell markdown-cell heading-cell"><h2 id="_1">第八题</h2></section>
+<section class="cell markdown-cell"><p>8.将参数keep_prob从（比如说）0.5增加到0.6可能会导致以下情况（选出所有正确项）：</p>
+<p>A. 【  】正则化效应被增强</p>
+<p>B. 【  】正则化效应被减弱</p>
+<p>C. 【  】训练集的误差会增加</p>
+<p>D. 【  】训练集的误差会减小</p></section>
+<section class="cell markdown-cell"><p>答案：  </p>
+<p>B.【 √ 】正则化效应被减弱</p>
+<p>D.【 √ 】训练集的误差会减小 </p></section>
+<section id="section-10" class="cell markdown-cell heading-cell"><h2 id="_1">第九题</h2></section>
+<section class="cell markdown-cell"><p>9.以下哪些技术可用于减少方差（减少过拟合）？（选出所有正确项）</p>
+<p>A. 【  】梯度消失</p>
+<p>B. 【  】数据扩充</p>
+<p>C. 【  】Dropout</p>
+<p>D. 【  】梯度检查</p>
+<p>E. 【  】Xavier初始化</p>
+<p>F. 【  】L2正则化</p>
+<p>G. 【  】梯度爆炸</p></section>
+<section class="cell markdown-cell"><p>答案：  </p>
+<p>B.【 √ 】数据扩充 </p>
+<p>C.【 √ 】Dropout</p>
+<p>F.【 √ 】L2正则化 </p></section>
+<section id="section-11" class="cell markdown-cell heading-cell"><h2 id="_1">第十题</h2></section>
+<section class="cell markdown-cell"><p>10.为什么要对输入$x$进行归一化？</p>
+<p>A. 【  】让参数初始化更快</p>
+<p>B. 【  】让代价函数更快地优化</p>
+<p>C. 【  】更容易做数据可视化</p>
+<p>D. 【  】是另一种正则化——有助减少方差</p></section>
+<section class="cell markdown-cell"><p>答案：  </p>
+<p>B.【 √ 】让代价函数更快地优化</p></section>
+</main>
+</body>
+</html>

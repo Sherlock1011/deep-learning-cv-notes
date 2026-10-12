@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>103_Pytorch加载数据</title>
+<style>
+body {
+  margin: 0;
+  color: #18212f;
+  background: #eef3f8;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  line-height: 1.7;
+}
+main {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 34px 28px 80px;
+  background: #fff;
+  min-height: 100vh;
+  border-left: 1px solid #d8dee8;
+  border-right: 1px solid #d8dee8;
+}
+a { color: #2563eb; text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1, h2, h3, h4 { line-height: 1.25; margin-top: 1.45em; letter-spacing: 0; }
+h1 {
+  margin-top: 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #d8dee8;
+  font-size: clamp(28px, 4vw, 42px);
+}
+h2 {
+  margin-top: 42px;
+  padding: 12px 14px;
+  border-left: 5px solid #2563eb;
+  background: #f3f6fb;
+  border-radius: 8px;
+  font-size: 25px;
+}
+h3 { color: #28364a; }
+p {
+  margin: 10px 0 14px;
+  max-width: 820px;
+}
+img {
+  display: block;
+  max-width: min(100%, 900px);
+  height: auto;
+  margin: 14px auto;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+}
+table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+th, td { border: 1px solid #d8dee8; padding: 8px 10px; text-align: left; }
+blockquote { border-left: 4px solid #bfd0ea; margin-left: 0; padding: 6px 16px; color: #4d5868; background: #f3f6fb; }
+pre {
+  overflow-x: auto;
+  background: #0f172a;
+  color: #e5e7eb;
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-family: "Cascadia Mono", Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.55;
+}
+code {
+  font-family: "Cascadia Mono", Consolas, monospace;
+  background: #eef3fb;
+  border-radius: 5px;
+  padding: 1px 5px;
+}
+pre code { background: transparent; padding: 0; }
+.top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.top a {
+  display: inline-block;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 6px 10px;
+  background: #f7f9fc;
+}
+.reader-note {
+  color: #4d5868;
+  background: #f8fafc;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 18px 0 24px;
+}
+.toc {
+  background: #ffffff;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 18px 0 28px;
+}
+.toc strong {
+  display: block;
+  margin-bottom: 8px;
+}
+.toc a {
+  display: inline-block;
+  margin: 3px 12px 3px 0;
+  color: #28364a;
+}
+.cell {
+  margin: 20px 0;
+}
+.markdown-cell {
+  font-size: 16px;
+  max-width: 900px;
+}
+.markdown-cell > :first-child { margin-top: 0; }
+.markdown-cell > :last-child { margin-bottom: 0; }
+.markdown-cell li { margin: 4px 0; }
+.markdown-cell strong { color: #0f172a; }
+.heading-cell {
+  max-width: 100%;
+}
+.step-cell {
+  position: relative;
+  max-width: 900px;
+  margin: 16px 0;
+  padding: 16px 18px 16px 58px;
+  background: #fbfcff;
+  border: 1px solid #d8dee8;
+  border-left: 5px solid #12805c;
+  border-radius: 8px;
+}
+.step-cell .step-badge {
+  position: absolute;
+  left: 16px;
+  top: 15px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: #12805c;
+  font-weight: 700;
+  line-height: 1;
+}
+.step-cell p {
+  margin: 0 0 8px;
+  max-width: 780px;
+}
+.figure-cell {
+  max-width: 100%;
+  margin: 12px 0 26px;
+}
+.figure-cell p {
+  max-width: 100%;
+}
+.markdown-cell hr {
+  border: 0;
+  border-top: 1px solid #d8dee8;
+  margin: 28px 0;
+}
+.code-cell {
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+.code-head {
+  font-size: 13px;
+  color: #5e6878;
+  background: #eef3fb;
+  padding: 6px 10px;
+  border-bottom: 1px solid #d8dee8;
+}
+.code-cell pre { margin: 0; border-radius: 0; }
+.output {
+  border-top: 1px solid #d8dee8;
+  padding: 10px 12px;
+  background: #fbfcff;
+}
+.output pre {
+  background: #f3f6fb;
+  color: #18212f;
+  margin: 0;
+}
+.output img { box-shadow: none; }
+.inline-code {
+  font-family: "Cascadia Mono", Consolas, monospace;
+  color: #0f172a;
+  background: #eef3fb;
+  border: 1px solid #d8dee8;
+  border-radius: 5px;
+  padding: 1px 5px;
+  word-break: break-word;
+}
+@media (max-width: 760px) {
+  main { padding: 24px 16px 56px; border: 0; }
+  .top { flex-direction: column; align-items: stretch; }
+  .top a { text-align: center; }
+}
+</style>
+</head>
+<body>
+<main>
+<div class="top"><a href="../index.html">返回讲义目录</a><a href="https://github.com/AccumulateMore/CV/tree/main">原始 notebook 目录</a></div>
+<h1>103_Pytorch加载数据</h1>
+<div class="reader-note">这页由原始 Jupyter Notebook 转为浏览器阅读版：步骤说明会以绿色提示块展示，截图已内嵌到页面中，代码和命令会用深色或浅色代码样式区分。</div>
+<nav class="toc"><strong>本节目录</strong><a href="#section-1">1. Pytorch加载数据</a><a href="#section-2">2. 常用数据集两种形式</a><a href="#section-3">3. 路径直接加载数据</a><a href="#section-4">4. Dataset加载数据</a></nav>
+<section id="section-1" class="cell markdown-cell heading-cell"><h2 id="1-pytorch">1. Pytorch加载数据</h2></section>
+<section class="cell markdown-cell step-cell"><span class="step-badge">①</span><p>Pytorch中加载数据需要Dataset、Dataloader。</p>
+<ul>
+<li>Dataset提供一种方式去获取每个数据及其对应的label，告诉我们总共有多少个数据。</li>
+<li>Dataloader为后面的网络提供不同的数据形式，它将一批一批数据进行一个打包。</li>
+</ul></section>
+<section id="section-2" class="cell markdown-cell heading-cell"><h2 id="2">2. 常用数据集两种形式</h2></section>
+<section class="cell markdown-cell step-cell"><span class="step-badge">①</span><p>常用的第一种数据形式，文件夹的名称是它的label。</p>
+<p>② 常用的第二种形式，lebel为文本格式，文本名称为图片名称，文本中的内容为对应的label。</p></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>from torch.utils.data import Dataset
+help(Dataset)</code></pre><div class="output"><pre>Help on class Dataset in module torch.utils.data.dataset:
+
+class Dataset(typing.Generic)
+ |  An abstract class representing a :class:`Dataset`.
+ |  
+ |  All datasets that represent a map from keys to data samples should subclass
+ |  it. All subclasses should overwrite :meth:`__getitem__`, supporting fetching a
+ |  data sample for a given key. Subclasses could also optionally overwrite
+ |  :meth:`__len__`, which is expected to return the size of the dataset by many
+ |  :class:`~torch.utils.data.Sampler` implementations and the default options
+ |  of :class:`~torch.utils.data.DataLoader`.
+ |  
+ |  .. note::
+ |    :class:`~torch.utils.data.DataLoader` by default constructs a index
+ |    sampler that yields integral indices.  To make it work with a map-style
+ |    dataset with non-integral indices/keys, a custom sampler must be provided.
+ |  
+ |  Method resolution order:
+ |      Dataset
+ |      typing.Generic
+ |      builtins.object
+ |  
+ |  Methods defined here:
+ |  
+ |  __add__(self, other:&#x27;Dataset[T_co]&#x27;) -&gt; &#x27;ConcatDataset[T_co]&#x27;
+ |  
+ |  __getattr__(self, attribute_name)
+ |  
+ |  __getitem__(self, index) -&gt; +T_co
+ |  
+ |  ----------------------------------------------------------------------
+ |  Class methods defined here:
+ |  
+ |  register_datapipe_as_function(function_name, cls_to_register, enable_df_api_tracing=False) from typing.GenericMeta
+ |  
+ |  register_function(function_name, function) from typing.GenericMeta
+ |  
+ |  ----------------------------------------------------------------------
+ |  Data descriptors defined here:
+ |  
+ |  __dict__
+ |      dictionary for instance variables (if defined)
+ |  
+ |  __weakref__
+ |      list of weak references to the object (if defined)
+ |  
+ |  ----------------------------------------------------------------------
+ |  Data and other attributes defined here:
+ |  
+ |  __abstractmethods__ = frozenset()
+ |  
+ |  __annotations__ = {&#x27;functions&#x27;: typing.Dict[str, typing.Callable]}
+ |  
+ |  __args__ = None
+ |  
+ |  __extra__ = None
+ |  
+ |  __next_in_mro__ = &lt;class &#x27;object&#x27;&gt;
+ |      The most base type
+ |  
+ |  __orig_bases__ = (typing.Generic[+T_co],)
+ |  
+ |  __origin__ = None
+ |  
+ |  __parameters__ = (+T_co,)
+ |  
+ |  __tree_hash__ = -9223371886060913604
+ |  
+ |  functions = {&#x27;concat&#x27;: functools.partial(&lt;function Dataset.register_da...
+ |  
+ |  ----------------------------------------------------------------------
+ |  Static methods inherited from typing.Generic:
+ |  
+ |  __new__(cls, *args, **kwds)
+ |      Create and return a new object.  See help(type) for accurate signature.
+
+</pre></div></section>
+<section id="section-3" class="cell markdown-cell heading-cell"><h2 id="3">3. 路径直接加载数据</h2></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>from PIL import Image
+
+img_path = &quot;Data/FirstTypeData/train/ants/0013035.jpg&quot;        
+img = Image.open(img_path)
+img.show()</code></pre></section>
+<section id="section-4" class="cell markdown-cell heading-cell"><h2 id="4-dataset">4. Dataset加载数据</h2></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>from torch.utils.data import Dataset
+from PIL import Image
+import os
+
+class MyData(Dataset):     
+    def __init__(self,root_dir,label_dir):    # 该魔术方法当创建一个事例对象时，会自动调用该函数
+        self.root_dir = root_dir # self.root_dir 相当于类中的全局变量
+        self.label_dir = label_dir     
+        self.path = os.path.join(self.root_dir,self.label_dir) # 字符串拼接，根据是Windows或Lixus系统情况进行拼接               
+        self.img_path = os.listdir(self.path) # 获得路径下所有图片的地址
+        
+    def __getitem__(self,idx):
+        img_name = self.img_path[idx]
+        img_item_path = os.path.join(self.root_dir,self.label_dir,img_name)            
+        img = Image.open(img_item_path)
+        label = self.label_dir
+        return img, label
+    
+    def __len__(self):
+        return len(self.img_path)
+    
+root_dir = &quot;Data/FirstTypeData/train&quot;
+ants_label_dir = &quot;ants&quot;
+bees_label_dir = &quot;bees&quot;
+ants_dataset = MyData(root_dir, ants_label_dir)
+bees_dataset = MyData(root_dir, bees_label_dir)
+print(len(ants_dataset))
+print(len(bees_dataset))
+train_dataset = ants_dataset + bees_dataset # train_dataset 就是两个数据集的集合了     
+print(len(train_dataset))
+
+img,label = train_dataset[200]
+print(&quot;label：&quot;,label)
+img.show()</code></pre><div class="output"><pre>124
+121
+245
+label： bees
+</pre></div></section>
+</main>
+</body>
+</html>

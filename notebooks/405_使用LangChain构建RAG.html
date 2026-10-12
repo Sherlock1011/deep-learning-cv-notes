@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>405_使用LangChain构建RAG</title>
+<style>
+body {
+  margin: 0;
+  color: #18212f;
+  background: #eef3f8;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  line-height: 1.7;
+}
+main {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 34px 28px 80px;
+  background: #fff;
+  min-height: 100vh;
+  border-left: 1px solid #d8dee8;
+  border-right: 1px solid #d8dee8;
+}
+a { color: #2563eb; text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1, h2, h3, h4 { line-height: 1.25; margin-top: 1.45em; letter-spacing: 0; }
+h1 {
+  margin-top: 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #d8dee8;
+  font-size: clamp(28px, 4vw, 42px);
+}
+h2 {
+  margin-top: 42px;
+  padding: 12px 14px;
+  border-left: 5px solid #2563eb;
+  background: #f3f6fb;
+  border-radius: 8px;
+  font-size: 25px;
+}
+h3 { color: #28364a; }
+p {
+  margin: 10px 0 14px;
+  max-width: 820px;
+}
+img {
+  display: block;
+  max-width: min(100%, 900px);
+  height: auto;
+  margin: 14px auto;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+}
+table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+th, td { border: 1px solid #d8dee8; padding: 8px 10px; text-align: left; }
+blockquote { border-left: 4px solid #bfd0ea; margin-left: 0; padding: 6px 16px; color: #4d5868; background: #f3f6fb; }
+pre {
+  overflow-x: auto;
+  background: #0f172a;
+  color: #e5e7eb;
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-family: "Cascadia Mono", Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.55;
+}
+code {
+  font-family: "Cascadia Mono", Consolas, monospace;
+  background: #eef3fb;
+  border-radius: 5px;
+  padding: 1px 5px;
+}
+pre code { background: transparent; padding: 0; }
+.top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.top a {
+  display: inline-block;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 6px 10px;
+  background: #f7f9fc;
+}
+.reader-note {
+  color: #4d5868;
+  background: #f8fafc;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 18px 0 24px;
+}
+.toc {
+  background: #ffffff;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 18px 0 28px;
+}
+.toc strong {
+  display: block;
+  margin-bottom: 8px;
+}
+.toc a {
+  display: inline-block;
+  margin: 3px 12px 3px 0;
+  color: #28364a;
+}
+.cell {
+  margin: 20px 0;
+}
+.markdown-cell {
+  font-size: 16px;
+  max-width: 900px;
+}
+.markdown-cell > :first-child { margin-top: 0; }
+.markdown-cell > :last-child { margin-bottom: 0; }
+.markdown-cell li { margin: 4px 0; }
+.markdown-cell strong { color: #0f172a; }
+.heading-cell {
+  max-width: 100%;
+}
+.step-cell {
+  position: relative;
+  max-width: 900px;
+  margin: 16px 0;
+  padding: 16px 18px 16px 58px;
+  background: #fbfcff;
+  border: 1px solid #d8dee8;
+  border-left: 5px solid #12805c;
+  border-radius: 8px;
+}
+.step-cell .step-badge {
+  position: absolute;
+  left: 16px;
+  top: 15px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: #12805c;
+  font-weight: 700;
+  line-height: 1;
+}
+.step-cell p {
+  margin: 0 0 8px;
+  max-width: 780px;
+}
+.figure-cell {
+  max-width: 100%;
+  margin: 12px 0 26px;
+}
+.figure-cell p {
+  max-width: 100%;
+}
+.markdown-cell hr {
+  border: 0;
+  border-top: 1px solid #d8dee8;
+  margin: 28px 0;
+}
+.code-cell {
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+.code-head {
+  font-size: 13px;
+  color: #5e6878;
+  background: #eef3fb;
+  padding: 6px 10px;
+  border-bottom: 1px solid #d8dee8;
+}
+.code-cell pre { margin: 0; border-radius: 0; }
+.output {
+  border-top: 1px solid #d8dee8;
+  padding: 10px 12px;
+  background: #fbfcff;
+}
+.output pre {
+  background: #f3f6fb;
+  color: #18212f;
+  margin: 0;
+}
+.output img { box-shadow: none; }
+.inline-code {
+  font-family: "Cascadia Mono", Consolas, monospace;
+  color: #0f172a;
+  background: #eef3fb;
+  border: 1px solid #d8dee8;
+  border-radius: 5px;
+  padding: 1px 5px;
+  word-break: break-word;
+}
+@media (max-width: 760px) {
+  main { padding: 24px 16px 56px; border: 0; }
+  .top { flex-direction: column; align-items: stretch; }
+  .top a { text-align: center; }
+}
+</style>
+</head>
+<body>
+<main>
+<div class="top"><a href="../index.html">返回讲义目录</a><a href="https://github.com/AccumulateMore/CV/tree/main">原始 notebook 目录</a></div>
+<h1>405_使用LangChain构建RAG</h1>
+<div class="reader-note">这页由原始 Jupyter Notebook 转为浏览器阅读版：步骤说明会以绿色提示块展示，截图已内嵌到页面中，代码和命令会用深色或浅色代码样式区分。</div>
+<nav class="toc"><strong>本节目录</strong><a href="#section-1">myprompt.py</a><a href="#section-2">simpleragv3.py</a></nav>
+<section id="section-1" class="cell markdown-cell heading-cell"><h2 id="my_promptpy">my_prompt.py</h2></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>&#x27;&#x27;&#x27;提示词模板&#x27;&#x27;&#x27;
+# 导入 PromptTemplate 类，用于创建提示词模板（Prompt Template）
+from langchain.prompts import PromptTemplate
+# 使用字符串模板方式定义提示词模板，其中 {subject} 是一个可被替换的占位符
+prompt_template = PromptTemplate.from_template(&#x27;请告诉我一个关于{subject}的笑话&#x27;)  # 实例化模板对象，定义模板格式   
+# 使用模板格式化，替换 {subject} 为“程序员”，生成具体的提示词
+prompt_a = prompt_template.format(subject=&#x27;程序员&#x27;)
+# 替换 {subject} 为“汽车”，生成另一个具体提示词
+prompt_b = prompt_template.format(subject=&#x27;汽车&#x27;)
+# 替换 {subject} 为“国际”，生成第三个提示词
+prompt_c = prompt_template.format(subject=&#x27;国际&#x27;)
+# 输出生成的提示词：关于程序员的笑话
+print(prompt_a)
+# 输出生成的提示词：关于汽车的笑话
+print(prompt_b)
+# 输出生成的提示词：关于国际的笑话
+print(prompt_c)</code></pre><div class="output"><pre>请告诉我一个关于程序员的笑话
+请告诉我一个关于汽车的笑话
+请告诉我一个关于国际的笑话
+</pre></div></section>
+<section id="section-2" class="cell markdown-cell heading-cell"><h2 id="simple_rag_v3py">simple_rag_v3.py</h2></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 导入 itemgetter，用于从数据结构中提取特定字段
+from operator import itemgetter
+# 导入 Path，用于处理文件路径
+from pathlib import Path
+# 导入提示词模板类
+from langchain_core.prompts import PromptTemplate
+# 导入输出解析器，将模型输出解析为字符串
+from langchain_core.output_parsers import StrOutputParser
+# 导入可组合的运行单元
+from langchain_core.runnables import RunnablePassthrough, RunnableParallel
+# 导入文件夹加载器和文本文件加载器
+from langchain_community.document_loaders import DirectoryLoader, TextLoader
+# 导入文本切分器，用于对文档进行分块
+from langchain_text_splitters import RecursiveCharacterTextSplitter, CharacterTextSplitter
+# 导入 HuggingFace 向量嵌入模型
+from langchain_huggingface import HuggingFaceEmbeddings
+# 导入 OpenAI 的聊天模型（兼容 DeepSeek 接口）
+from langchain_openai import ChatOpenAI
+# 导入 Chroma 向量数据库
+from langchain_chroma import Chroma
+# 再次导入提示词模板类（可省略，已在前面导入）
+from langchain.prompts import PromptTemplate
+# 导入 os 模块，用于读取系统环境变量
+import os
+
+# 从环境变量中获取名为 DEEPSEEK_API_KEY 的密钥（你需提前设置这个环境变量）
+api_key = os.environ[&#x27;DEEPSEEK_API_KEY&#x27;]
+
+# 实例化对话语言模型（大语言模型），使用 deepseek-chat，传入 API 密钥
+llm = ChatOpenAI(model=&#x27;deepseek-chat&#x27;, base_url=&#x27;https://api.deepseek.com&#x27;, api_key=api_key)
+
+# 实例化向量嵌入模型，用于将文本转换为向量，路径必须为本地 HuggingFace 模型路径
+embedding_model = HuggingFaceEmbeddings(model=r&#x27;model_dir\BAAI\bge-large-zh-v1___5&#x27;)
+
+# 指定包含知识文本的本地文件夹路径
+file_dir = Path(&#x27;my_knowledge&#x27;)
+
+# 文本切分器：将文档按 500 字为一块进行切分，重叠部分为 100 字
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
+
+# 创建 Chroma 向量数据库对象，指定嵌入模型和保存位置
+vector_store = Chroma(embedding_function=embedding_model, persist_directory=&#x27;./chroma_v3&#x27;)
+
+# 设置检索器，用于从向量数据库中按相似度取出前 k 个文档（默认 5 个）
+retriever = vector_store.as_retriever(search_kwargs={&#x27;k&#x27;: 5})
+
+# 创建提示词模板：{context} 和 {question} 是可替换的占位符
+prompt_template = PromptTemplate.from_template(&quot;&quot;&quot;
+你是一个严谨的RAG助手。
+请根据以下提供的上下文信息来回答问题。
+如果上下文信息不足以回答问题，请直接说“根据提供的信息无法回答”
+如果回答时使用了上下文中的信息，在回答后输出使用了哪些上下文，
+上下文信息:
+{context}
+-------------
+问题：{question}&quot;&quot;&quot;)
+
+# 创建一个链（Chain），包含以下步骤：
+# 1. 接收用户输入的 &#x27;question&#x27;；
+# 2. 将 question 传入 retriever，获取相关 context；
+# 3. 使用 prompt_template 构造完整提示词；
+# 4. 使用 LLM 生成回答；
+# 5. 使用 StrOutputParser 解析输出为字符串。
+chain = {
+    &#x27;question&#x27;: RunnablePassthrough()  # 原样传递 question
+} | RunnablePassthrough.assign(        # 增加 context 字段（从 retriever 中检索 question 相关内容）
+    context=itemgetter(&#x27;question&#x27;) | retriever
+) | prompt_template | llm | StrOutputParser()  # 构造 prompt、调用模型、解析输出
+
+# 执行主程序
+if __name__ == &#x27;__main__&#x27;:
+    # 使用 DirectoryLoader 加载 my_knowledge 目录中的所有文本文件
+    # TextLoader 用于以 UTF-8 编码方式读取每个文件
+    docs = DirectoryLoader(str(file_dir),
+        loader_cls=lambda path: TextLoader(path, encoding=&#x27;utf-8&#x27;)
+    ).load()
+
+    # 将加载的文档进行切分，分成多个小段
+    docs = text_splitter.split_documents(docs)
+
+    # 将切分好的文档添加到向量数据库中进行存储
+    vector_store.add_documents(docs)
+
+    # 测试链条：输入一个问题“能飞多久？”，并打印模型的回答
+    print(chain.invoke(&#x27;能飞多久？&#x27;))</code></pre><div class="output"><pre>D:\11_Anaconda\envs\RAG\Lib\site-packages\tqdm\auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+Failed to send telemetry event ClientStartEvent: capture() takes 1 positional argument but 3 were given
+Failed to send telemetry event ClientCreateCollectionEvent: capture() takes 1 positional argument but 3 were given
+Failed to send telemetry event CollectionQueryEvent: capture() takes 1 positional argument but 3 were given
+</pre></div><div class="output"><pre>探索者X100型无人机的电池续航时间长达30分钟。
+
+使用的上下文：
+- Document(id=&#x27;a929d46e-9400-4ce4-bbaa-6bf9a2fc2d27&#x27;, ...) 中关于电池续航时间的信息
+</pre></div></section>
+</main>
+</body>
+</html>

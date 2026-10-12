@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>319_课程2_第3周_测验题</title>
+<style>
+body {
+  margin: 0;
+  color: #18212f;
+  background: #eef3f8;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  line-height: 1.7;
+}
+main {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 34px 28px 80px;
+  background: #fff;
+  min-height: 100vh;
+  border-left: 1px solid #d8dee8;
+  border-right: 1px solid #d8dee8;
+}
+a { color: #2563eb; text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1, h2, h3, h4 { line-height: 1.25; margin-top: 1.45em; letter-spacing: 0; }
+h1 {
+  margin-top: 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #d8dee8;
+  font-size: clamp(28px, 4vw, 42px);
+}
+h2 {
+  margin-top: 42px;
+  padding: 12px 14px;
+  border-left: 5px solid #2563eb;
+  background: #f3f6fb;
+  border-radius: 8px;
+  font-size: 25px;
+}
+h3 { color: #28364a; }
+p {
+  margin: 10px 0 14px;
+  max-width: 820px;
+}
+img {
+  display: block;
+  max-width: min(100%, 900px);
+  height: auto;
+  margin: 14px auto;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+}
+table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+th, td { border: 1px solid #d8dee8; padding: 8px 10px; text-align: left; }
+blockquote { border-left: 4px solid #bfd0ea; margin-left: 0; padding: 6px 16px; color: #4d5868; background: #f3f6fb; }
+pre {
+  overflow-x: auto;
+  background: #0f172a;
+  color: #e5e7eb;
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-family: "Cascadia Mono", Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.55;
+}
+code {
+  font-family: "Cascadia Mono", Consolas, monospace;
+  background: #eef3fb;
+  border-radius: 5px;
+  padding: 1px 5px;
+}
+pre code { background: transparent; padding: 0; }
+.top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.top a {
+  display: inline-block;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 6px 10px;
+  background: #f7f9fc;
+}
+.reader-note {
+  color: #4d5868;
+  background: #f8fafc;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 18px 0 24px;
+}
+.toc {
+  background: #ffffff;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 18px 0 28px;
+}
+.toc strong {
+  display: block;
+  margin-bottom: 8px;
+}
+.toc a {
+  display: inline-block;
+  margin: 3px 12px 3px 0;
+  color: #28364a;
+}
+.cell {
+  margin: 20px 0;
+}
+.markdown-cell {
+  font-size: 16px;
+  max-width: 900px;
+}
+.markdown-cell > :first-child { margin-top: 0; }
+.markdown-cell > :last-child { margin-bottom: 0; }
+.markdown-cell li { margin: 4px 0; }
+.markdown-cell strong { color: #0f172a; }
+.heading-cell {
+  max-width: 100%;
+}
+.step-cell {
+  position: relative;
+  max-width: 900px;
+  margin: 16px 0;
+  padding: 16px 18px 16px 58px;
+  background: #fbfcff;
+  border: 1px solid #d8dee8;
+  border-left: 5px solid #12805c;
+  border-radius: 8px;
+}
+.step-cell .step-badge {
+  position: absolute;
+  left: 16px;
+  top: 15px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: #12805c;
+  font-weight: 700;
+  line-height: 1;
+}
+.step-cell p {
+  margin: 0 0 8px;
+  max-width: 780px;
+}
+.figure-cell {
+  max-width: 100%;
+  margin: 12px 0 26px;
+}
+.figure-cell p {
+  max-width: 100%;
+}
+.markdown-cell hr {
+  border: 0;
+  border-top: 1px solid #d8dee8;
+  margin: 28px 0;
+}
+.code-cell {
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+.code-head {
+  font-size: 13px;
+  color: #5e6878;
+  background: #eef3fb;
+  padding: 6px 10px;
+  border-bottom: 1px solid #d8dee8;
+}
+.code-cell pre { margin: 0; border-radius: 0; }
+.output {
+  border-top: 1px solid #d8dee8;
+  padding: 10px 12px;
+  background: #fbfcff;
+}
+.output pre {
+  background: #f3f6fb;
+  color: #18212f;
+  margin: 0;
+}
+.output img { box-shadow: none; }
+.inline-code {
+  font-family: "Cascadia Mono", Consolas, monospace;
+  color: #0f172a;
+  background: #eef3fb;
+  border: 1px solid #d8dee8;
+  border-radius: 5px;
+  padding: 1px 5px;
+  word-break: break-word;
+}
+@media (max-width: 760px) {
+  main { padding: 24px 16px 56px; border: 0; }
+  .top { flex-direction: column; align-items: stretch; }
+  .top a { text-align: center; }
+}
+</style>
+</head>
+<body>
+<main>
+<div class="top"><a href="../index.html">返回讲义目录</a><a href="https://github.com/AccumulateMore/CV/tree/main">原始 notebook 目录</a></div>
+<h1>319_课程2_第3周_测验题</h1>
+<div class="reader-note">这页由原始 Jupyter Notebook 转为浏览器阅读版：步骤说明会以绿色提示块展示，截图已内嵌到页面中，代码和命令会用深色或浅色代码样式区分。</div>
+<nav class="toc"><strong>本节目录</strong><a href="#section-1">课程2第3周测验题</a><a href="#section-2">第一题</a><a href="#section-3">第二题</a><a href="#section-4">第三题</a><a href="#section-5">第四题</a><a href="#section-6">第五题</a><a href="#section-7">第六题</a><a href="#section-8">第七题</a><a href="#section-9">第八题</a><a href="#section-10">第九题</a><a href="#section-11">第十题</a></nav>
+<section id="section-1" class="cell markdown-cell heading-cell"><h2 id="2_3_"><strong><em>课程2_第3周_测验题</em></strong></h2></section>
+<section id="section-2" class="cell markdown-cell heading-cell"><h2 id="_1">第一题</h2></section>
+<section class="cell markdown-cell"><p>1.如果在大量的超参数中搜索最佳的参数值，那么应该尝试在网格中搜索而不是使用随机值，以便更系统的搜索，而不是依靠运气，请问这句话是正确的吗？</p>
+<p>A. 【  】对</p>
+<p>B. 【  】不对</p></section>
+<section class="cell markdown-cell"><p>答案：  </p>
+<p>B.【 √ 】不对</p></section>
+<section id="section-3" class="cell markdown-cell heading-cell"><h2 id="_1">第二题</h2></section>
+<section class="cell markdown-cell"><p>2.每个超参数如果设置得不好，都会对训练产生巨大的负面影响，因此所有的超参数都要调整好，请问这是正确的吗？</p>
+<p>A. 【  】对</p>
+<p>B. 【  】不对</p></section>
+<section class="cell markdown-cell"><p>答案：  </p>
+<p>B.【 √ 】不对  </p></section>
+<section id="section-4" class="cell markdown-cell heading-cell"><h2 id="_1">第三题</h2></section>
+<section class="cell markdown-cell"><p>3.在超参数搜索过程中，你尝试只照顾一个模型（使用熊猫策略）还是一起训练大量的模型（鱼子酱策略）在很大程度上取决于：</p>
+<p>A. 【  】是否使用批量（batch）或小批量优化（mini-batch optimization）</p>
+<p>B. 【  】神经网络中局部最小值（鞍点）的存在性</p>
+<p>C. 【  】在你能力范围内，你能够拥有多大的计算能力（注：就是高性能电脑和低性能电脑的区别）</p>
+<p>D. 【  】需要调整的超参数的数量</p></section>
+<section class="cell markdown-cell"><p>答案：  </p>
+<p>C.【 √ 】在你能力范围内，你能够拥有多大的计算能力（注：就是高性能电脑和低性能电脑的区别）</p></section>
+<section id="section-5" class="cell markdown-cell heading-cell"><h2 id="_1">第四题</h2></section>
+<section class="cell markdown-cell"><p>4.如果您认为$\beta$（动量超参数）介于0.9和0.99之间，那么推荐采用以下哪一种方法来对$\beta$值进行取样？</p>
+<p>A. 【  】</p>
+<p>r = np.random.rand()<br>
+beta = r * 0.09 + 0.9</p>
+<p>B. 【  】</p>
+<p>r = np.random.rand()<br>
+beta = 1 - 10 ** ( - r - 1 )</p>
+<p>C. 【  】</p>
+<p>r = np.random.rand()<br>
+beta = 1 - 10 ** ( - r + 1 )</p>
+<p>D. 【  】</p>
+<p>r = np.random.rand()<br>
+beta = r * 0.9 + 0.09</p></section>
+<section class="cell markdown-cell"><p>答案：  </p>
+<p>B.【 √ 】</p>
+<p>r = np.random.rand()<br>
+beta = 1 - 10 ** ( - r - 1 )</p></section>
+<section id="section-6" class="cell markdown-cell heading-cell"><h2 id="_1">第五题</h2></section>
+<section class="cell markdown-cell"><p>5.找到好的超参数的值是非常耗时的，所以通常情况下你应该在项目开始时做一次，并尝试找到非常好的超参数，这样你就不必再次重新调整它们。请问这正确吗？</p>
+<p>A. 【  】对</p>
+<p>B. 【  】不对</p></section>
+<section class="cell markdown-cell"><p>答案：  </p>
+<p>B.【 √ 】不对</p></section>
+<section id="section-7" class="cell markdown-cell heading-cell"><h2 id="_1">第六题</h2></section>
+<section class="cell markdown-cell"><p>6.在视频中介绍的批量标准化中，如果将其应用于神经网络的第l层，您应该对谁进行标准化？</p>
+<p>A. 【  】$z^{[l]}$</p>
+<p>B. 【  】$W^{[l]}$</p>
+<p>C. 【  】$b^{[l]}$</p>
+<p>D. 【  】$b^{[l]}$</p></section>
+<section class="cell markdown-cell"><p>答案：  </p>
+<p>A.【 √ 】$z^{[l]}$</p></section>
+<section id="section-8" class="cell markdown-cell heading-cell"><h2 id="_1">第七题</h2></section>
+<section class="cell markdown-cell"><p>7.在标准化公式$z^{(i)}_{norm}=\frac{z^{(i)}-\mu}{\sqrt{\sigma^2+\epsilon}}$，为什么要使用epsilon（ϵ）？</p>
+<p>A. 【  】为了更准确地标准化</p>
+<p>B. 【  】为了避免除零操作</p>
+<p>C. 【  】为了加速收敛</p>
+<p>D. 【  】防止$\mu$太小</p></section>
+<section class="cell markdown-cell"><p>答案：  </p>
+<p>B.【 √ 】为了避免除零操作</p></section>
+<section id="section-9" class="cell markdown-cell heading-cell"><h2 id="_1">第八题</h2></section>
+<section class="cell markdown-cell"><p>8.批标准化中关于$\gamma$和$\beta$的以下哪些陈述是正确的？</p>
+<p>A. 【  】对于每个层，有一个全局值$\gamma \in \mathbb{R}$和一个全局值$\beta \in \mathbb{R}$，适用于于该层中的所有隐藏单元。</p>
+<p>B. 【  】$\gamma$和$\beta$是算法的超参数，我们通过随机采样进行调整</p>
+<p>C. 【  】它们确定了给定层的线性变量$z^{[l]}$的均值和方差</p>
+<p>D. 【  】最佳值是$\gamma=\sqrt{\sigma^2+\epsilon},\beta=\mu$</p>
+<p>E. 【  】它们可以用Adam、动量的梯度下降或RMSprop，而不仅仅是用梯度下降来学习</p></section>
+<section class="cell markdown-cell"><p>答案：  </p>
+<p>C.【 √ 】它们确定了给定层的线性变量$z^{[l]}$的均值和方差</p>
+<p>E.【 √ 】它们可以用Adam、动量的梯度下降或RMSprop，而不仅仅是用梯度下降来学习</p></section>
+<section id="section-10" class="cell markdown-cell heading-cell"><h2 id="_1">第九题</h2></section>
+<section class="cell markdown-cell"><p>9.在训练了具有批标准化的神经网络之后，在用新样本评估神经网络的时候，您应该：</p>
+<p>A. 【  】如果你在256个例子的mini-batch上实现了批标准化，那么如果你要在一个测试例子上进行评估，你应该将这个例子重复256次，这样你就可以使用和训练时大小相同的mini-batch进行预测。</p>
+<p>B. 【  】使用最新的mini-batch的$\mu$和$\sigma^2$值来执行所需的标准化</p>
+<p>C. 【  】跳过用$\mu$和$\sigma^2$值标准化的步骤，因为一个例子不需要标准化</p>
+<p>D. 【  】执行所需的标准化，使用在训练期间，通过指数加权平均值得出的$\mu$和$\sigma^2$</p></section>
+<section class="cell markdown-cell"><p>答案：  </p>
+<p>D.【 √ 】执行所需的标准化，使用在训练期间，通过指数加权平均值得出的$\mu$和$\sigma^2$</p></section>
+<section id="section-11" class="cell markdown-cell heading-cell"><h2 id="_1">第十题</h2></section>
+<section class="cell markdown-cell"><p>10.关于深度学习编程框架的这些陈述中，哪一个是正确的？（选出所有正确项）</p>
+<p>A. 【  】即使一个项目目前是开源的，项目的良好管理有助于确保它即使在长期内仍然保持开放，而不是仅仅为了一个公司而关闭或修改。</p>
+<p>B. 【  】通过编程框架，您可以使用比低级语言（如Python）更少的代码来编写深度学习算法。</p>
+<p>C. 【  】深度学习编程框架的运行需要基于云的机器。</p></section>
+<section class="cell markdown-cell"><p>答案：  </p>
+<p>A.【 √ 】即使一个项目目前是开源的，项目的良好管理有助于确保它即使在长期内仍然保持开放，而不是仅仅为了一个公司而关闭或修改。</p>
+<p>B.【 √ 】通过编程框架，您可以使用比低级语言（如Python）更少的代码来编写深度学习算法。</p></section>
+</main>
+</body>
+</html>

@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>255_机器翻译数据集</title>
+<style>
+body {
+  margin: 0;
+  color: #18212f;
+  background: #eef3f8;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  line-height: 1.7;
+}
+main {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 34px 28px 80px;
+  background: #fff;
+  min-height: 100vh;
+  border-left: 1px solid #d8dee8;
+  border-right: 1px solid #d8dee8;
+}
+a { color: #2563eb; text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1, h2, h3, h4 { line-height: 1.25; margin-top: 1.45em; letter-spacing: 0; }
+h1 {
+  margin-top: 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #d8dee8;
+  font-size: clamp(28px, 4vw, 42px);
+}
+h2 {
+  margin-top: 42px;
+  padding: 12px 14px;
+  border-left: 5px solid #2563eb;
+  background: #f3f6fb;
+  border-radius: 8px;
+  font-size: 25px;
+}
+h3 { color: #28364a; }
+p {
+  margin: 10px 0 14px;
+  max-width: 820px;
+}
+img {
+  display: block;
+  max-width: min(100%, 900px);
+  height: auto;
+  margin: 14px auto;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+}
+table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+th, td { border: 1px solid #d8dee8; padding: 8px 10px; text-align: left; }
+blockquote { border-left: 4px solid #bfd0ea; margin-left: 0; padding: 6px 16px; color: #4d5868; background: #f3f6fb; }
+pre {
+  overflow-x: auto;
+  background: #0f172a;
+  color: #e5e7eb;
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-family: "Cascadia Mono", Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.55;
+}
+code {
+  font-family: "Cascadia Mono", Consolas, monospace;
+  background: #eef3fb;
+  border-radius: 5px;
+  padding: 1px 5px;
+}
+pre code { background: transparent; padding: 0; }
+.top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.top a {
+  display: inline-block;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 6px 10px;
+  background: #f7f9fc;
+}
+.reader-note {
+  color: #4d5868;
+  background: #f8fafc;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 18px 0 24px;
+}
+.toc {
+  background: #ffffff;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 18px 0 28px;
+}
+.toc strong {
+  display: block;
+  margin-bottom: 8px;
+}
+.toc a {
+  display: inline-block;
+  margin: 3px 12px 3px 0;
+  color: #28364a;
+}
+.cell {
+  margin: 20px 0;
+}
+.markdown-cell {
+  font-size: 16px;
+  max-width: 900px;
+}
+.markdown-cell > :first-child { margin-top: 0; }
+.markdown-cell > :last-child { margin-bottom: 0; }
+.markdown-cell li { margin: 4px 0; }
+.markdown-cell strong { color: #0f172a; }
+.heading-cell {
+  max-width: 100%;
+}
+.step-cell {
+  position: relative;
+  max-width: 900px;
+  margin: 16px 0;
+  padding: 16px 18px 16px 58px;
+  background: #fbfcff;
+  border: 1px solid #d8dee8;
+  border-left: 5px solid #12805c;
+  border-radius: 8px;
+}
+.step-cell .step-badge {
+  position: absolute;
+  left: 16px;
+  top: 15px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: #12805c;
+  font-weight: 700;
+  line-height: 1;
+}
+.step-cell p {
+  margin: 0 0 8px;
+  max-width: 780px;
+}
+.figure-cell {
+  max-width: 100%;
+  margin: 12px 0 26px;
+}
+.figure-cell p {
+  max-width: 100%;
+}
+.markdown-cell hr {
+  border: 0;
+  border-top: 1px solid #d8dee8;
+  margin: 28px 0;
+}
+.code-cell {
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+.code-head {
+  font-size: 13px;
+  color: #5e6878;
+  background: #eef3fb;
+  padding: 6px 10px;
+  border-bottom: 1px solid #d8dee8;
+}
+.code-cell pre { margin: 0; border-radius: 0; }
+.output {
+  border-top: 1px solid #d8dee8;
+  padding: 10px 12px;
+  background: #fbfcff;
+}
+.output pre {
+  background: #f3f6fb;
+  color: #18212f;
+  margin: 0;
+}
+.output img { box-shadow: none; }
+.inline-code {
+  font-family: "Cascadia Mono", Consolas, monospace;
+  color: #0f172a;
+  background: #eef3fb;
+  border: 1px solid #d8dee8;
+  border-radius: 5px;
+  padding: 1px 5px;
+  word-break: break-word;
+}
+@media (max-width: 760px) {
+  main { padding: 24px 16px 56px; border: 0; }
+  .top { flex-direction: column; align-items: stretch; }
+  .top a { text-align: center; }
+}
+</style>
+</head>
+<body>
+<main>
+<div class="top"><a href="../index.html">返回讲义目录</a><a href="https://github.com/AccumulateMore/CV/tree/main">原始 notebook 目录</a></div>
+<h1>255_机器翻译数据集</h1>
+<div class="reader-note">这页由原始 Jupyter Notebook 转为浏览器阅读版：步骤说明会以绿色提示块展示，截图已内嵌到页面中，代码和命令会用深色或浅色代码样式区分。</div>
+
+<section id="section-1" class="cell markdown-cell heading-cell"><h2 id="1">1. 机器翻译数据集</h2></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>import os
+import torch
+from d2l import torch as d2l</code></pre></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 下载和预处理数据集
+# 将数据集的下载链接和校验码与&#x27;fra-eng&#x27;标识关联起来
+d2l.DATA_HUB[&#x27;fra-eng&#x27;] = (d2l.DATA_URL + &#x27;fra-eng.zip&#x27;,
+                          &#x27;94646ad1522d915e7b0f9296181140edcf86a4f5&#x27;)
+
+def read_data_nmt():
+    &quot;&quot;&quot;载入 “英语-法语” 数据集 &quot;&quot;&quot;
+    # 下载并解压数据集
+    data_dir = d2l.download_extract(&#x27;fra-eng&#x27;)
+    # 读取数据并返回
+    with open(os.path.join(data_dir, &#x27;fra.txt&#x27;), &#x27;r&#x27;, encoding=&#x27;utf-8&#x27;) as f:
+        return f.read()
+    
+# 调用函数读取数据集
+raw_text = read_data_nmt()
+# 打印数据集的前75个字符
+print(raw_text[:75])</code></pre><div class="output"><pre>Go.	Va !
+Hi.	Salut !
+Run!	Cours !
+Run!	Courez !
+Who?	Qui ?
+Wow!	Ça alors !
+
+</pre></div></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 几个预处理步骤
+def preprocess_nmt(text):
+    &quot;&quot;&quot;预处理 “英语-法语” 数据集&quot;&quot;&quot;
+    # 判断字符是否是特定标点符号并且前一个字符不是空格
+    def no_space(char, prev_char):
+        return char in set(&#x27;,.!?&#x27;) and prev_char != &#x27; &#x27;
+    # 替换特殊字符为空格，转换为小写
+    text = text.replace(&#x27;\u202f&#x27;, &#x27; &#x27;).replace(&#x27;\xa0&#x27;,&#x27; &#x27;).lower()
+    out = [
+        &#x27; &#x27; + char if i &gt; 0 and no_space(char, text[i - 1]) else char # 在特定标点符号前添加空格
+        for i, char in enumerate(text)] # 遍历文本中的每个字符
+    return &#x27;&#x27;.join(out) # 将处理后的字符列表转换为字符串
+
+# 调用预处理函数处理原始文本
+text = preprocess_nmt(raw_text)
+# 打印处理后的文本的前80个字符
+print(text[:80])</code></pre><div class="output"><pre>go .	va !
+hi .	salut !
+run !	cours !
+run !	courez !
+who ?	qui ?
+wow !	ça alors !
+</pre></div></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 词元化
+def tokenize_nmt(text, num_examples=None):
+    &quot;&quot;&quot;词元化 “英语-法语” 数据数据集 &quot;&quot;&quot;
+    # 存储英语和法语的词元序列
+    source, target = [], []  
+    # 遍历文本中的每一行
+    for i, line in enumerate(text.split(&#x27;\n&#x27;)):
+        # 如果指定了num_examples且超过了指定数量，则结束循环
+        if num_examples and i &gt; num_examples:
+            break
+        # 按制表符分割行
+        parts = line.split(&#x27;\t&#x27;)
+        # 如果行中包含了两个部分
+        if len(parts) == 2:
+            # 将英语部分按空格分割为词元，并添加到source列表
+            source.append(parts[0].split(&#x27; &#x27;)) # 英语
+            # 将法语部分按空格分割为词元，并添加到target列表
+            target.append(parts[1].split(&#x27; &#x27;)) # 法语
+    return source, target
+
+# 调用函数词元化文本
+source, target = tokenize_nmt(text)
+# 打印source和target的前6个词元序列
+source[:6], target[:6]</code></pre><div class="output"><pre>([[&#x27;go&#x27;, &#x27;.&#x27;],
+  [&#x27;hi&#x27;, &#x27;.&#x27;],
+  [&#x27;run&#x27;, &#x27;!&#x27;],
+  [&#x27;run&#x27;, &#x27;!&#x27;],
+  [&#x27;who&#x27;, &#x27;?&#x27;],
+  [&#x27;wow&#x27;, &#x27;!&#x27;]],
+ [[&#x27;va&#x27;, &#x27;!&#x27;],
+  [&#x27;salut&#x27;, &#x27;!&#x27;],
+  [&#x27;cours&#x27;, &#x27;!&#x27;],
+  [&#x27;courez&#x27;, &#x27;!&#x27;],
+  [&#x27;qui&#x27;, &#x27;?&#x27;],
+  [&#x27;ça&#x27;, &#x27;alors&#x27;, &#x27;!&#x27;]])</pre></div></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 绘制每个文本序列所包含的标记数量的直方图，根据句子长度做的直方图
+# 设置图形大小
+d2l.set_figsize()
+# 绘制每个文本序列所包含的标记数量的直方图
+_, _, patches = d2l.plt.hist([[len(l)
+                              for l in source], [len(l) for l in target]],
+                            label = [&#x27;source&#x27;,&#x27;target&#x27;]) # 添加标签
+# 遍历第二个直方图的每个矩形
+for patch in patches[1].patches:
+    # 设置矩形的填充样式为斜线
+    patch.set_hatch(&#x27;/&#x27;)
+# 添加图例，位于右上角
+d2l.plt.legend(loc=&#x27;upper right&#x27;)</code></pre><div class="output"><pre>&lt;matplotlib.legend.Legend at 0x1e2bee2b630&gt;</pre></div><div class="output"><pre>&lt;Figure size 252x180 with 1 Axes&gt;</pre></div></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 词汇表
+# 创建源语言的词汇表对象
+src_vocab = d2l.Vocab(source, min_freq=2,
+                     reserved_tokens=[&#x27;&lt;pad&gt;&#x27;,&#x27;&lt;bos&gt;&#x27;,&#x27;&lt;eos&gt;&#x27;]) # bos 表示句子开始，eos表示句子结束，min_freq=2表示句子长度小于2个就不要了  
+# 计算词汇表的大小
+len(src_vocab)</code></pre><div class="output"><pre>10012</pre></div></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 序列样本都有一个固定长度截断或填充文本序列
+def truncate_pad(line, num_steps, padding_token):
+    &quot;&quot;&quot;截断或填充文本序列&quot;&quot;&quot;
+    # 如果文本序列长度超过了指定的长度
+    if len(line) &gt; num_steps:
+        # 截断文本序列，取前num_steps个词元
+        return line[:num_steps]
+    # 填充文本序列，添加padding_token直到长度达到num_steps
+    return line + [padding_token] * (num_steps - len(line))
+# 对源语言的第一个文本序列进行截断或填充
+truncate_pad(src_vocab[source[0]], 10, src_vocab[&#x27;&lt;pad&gt;&#x27;])</code></pre><div class="output"><pre>[47, 4, 1, 1, 1, 1, 1, 1, 1, 1]</pre></div></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 转换成小批量数据集用于训练
+def build_array_nmt(lines, vocab, num_steps):
+    &quot;&quot;&quot;将机器翻译的文本序列转换成小批量&quot;&quot;&quot;
+    # 将文本序列中的词元转换为词汇表中的索引
+    lines = [vocab[l] for l in lines]
+    # 每个句子后面加一个截止符&#x27;&lt;eos&gt;&#x27;
+    lines = [l + [vocab[&#x27;&lt;eos&gt;&#x27;]] for l in lines] # 每个句子后面加了一个截止符
+    # 构建小批量数据集的张量表示
+    array = torch.tensor([ truncate_pad(l, num_steps, vocab[&#x27;&lt;pad&gt;&#x27;]) for l in lines ])
+    # 计算原始句子的实际长度
+    valid_len = (array != vocab[&#x27;&lt;pad&gt;&#x27;]).type(torch.int32).sum(1)
+    # 返回小批量数据集的张量表示和实际长度
+    return array, valid_len # valid_len 为原始句子的实际长度</code></pre></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 训练模型
+def load_data_nmt(batch_size, num_steps, num_examples=600):
+    &quot;&quot;&quot;返回翻译数据集的迭代器和词汇表&quot;&quot;&quot;
+    # 预处理原始数据集
+    text = preprocess_nmt(read_data_nmt())
+    # 对预处理后的文本进行词元化
+    source, target = tokenize_nmt(text, num_examples)
+    # 创建源语言词汇表对象
+    src_vocab = d2l.Vocab(source, min_freq=2,
+                         reserved_tokens=[&#x27;&lt;pad&gt;&#x27;,&#x27;&lt;bos&gt;&#x27;,&#x27;&lt;eos&gt;&#x27;])
+    # 创建目标语言词汇表对象
+    tgt_vocab = d2l.Vocab(target, min_freq=2,
+                         reserved_tokens=[&#x27;&lt;pad&gt;&#x27;,&#x27;&lt;bos&gt;&#x27;,&#x27;&lt;eos&gt;&#x27;])
+    # 将源语言文本序列转换为小批量数据集的张量表示和实际长度
+    src_array, src_valid_len = build_array_nmt(source, src_vocab, num_steps)  
+    # 将目标语言文本序列转换为小批量数据集的张量表示和实际长度
+    tgt_array, tgt_valid_len = build_array_nmt(target, tgt_vocab, num_steps)
+    # 构建数据集的张量表示和实际长度的元组
+    data_arrays = (src_array, src_valid_len, tgt_array, tgt_valid_len)
+    # 加载数据集并创建迭代器
+    data_iter = d2l.load_array(data_arrays, batch_size)
+    # 返回数据迭代器和源语言、目标语言的词汇表对象
+    return data_iter, src_vocab, tgt_vocab</code></pre></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 读出 “英语-法语” 数据集中第一个小批量数据
+# 加载翻译数据集的迭代器和词汇表，设置每个小批量的大小和序列长度
+train_iter, src_vocab, tgt_vocab = load_data_nmt(batch_size=2, num_steps=8)  
+# 遍历数据迭代器，获取每个小批量的数据和有效长度
+for X, X_valid_len, Y, Y_valid_len in train_iter:
+    # 打印源语言序列的张量表示（整数类型）
+    print(&#x27;X:&#x27;, X.type(torch.int32))
+    # 打印源语言序列的有效长度
+    print(&#x27;valid lengths for X:&#x27;, X_valid_len)
+    # 打印目标语言序列的张量表示（整数类型）
+    print(&#x27;Y:&#x27;, Y.type(torch.int32))
+    # 打印目标语言序列的有效长度
+    print(&#x27;valid lengths for Y:&#x27;, Y_valid_len)
+    # 跳出循环，只打印第一个小批量数据
+    break</code></pre><div class="output"><pre>X: tensor([[83, 15,  4,  3,  1,  1,  1,  1],
+        [69, 17,  9, 11,  3,  1,  1,  1]], dtype=torch.int32)
+valid lengths for X: tensor([4, 5])
+Y: tensor([[  0,   5,   3,   1,   1,   1,   1,   1],
+        [ 90, 172,   9,   3,   1,   1,   1,   1]], dtype=torch.int32)
+valid lengths for Y: tensor([3, 4])
+</pre></div></section>
+</main>
+</body>
+</html>

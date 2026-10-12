@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>247_文本预处理</title>
+<style>
+body {
+  margin: 0;
+  color: #18212f;
+  background: #eef3f8;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  line-height: 1.7;
+}
+main {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 34px 28px 80px;
+  background: #fff;
+  min-height: 100vh;
+  border-left: 1px solid #d8dee8;
+  border-right: 1px solid #d8dee8;
+}
+a { color: #2563eb; text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1, h2, h3, h4 { line-height: 1.25; margin-top: 1.45em; letter-spacing: 0; }
+h1 {
+  margin-top: 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #d8dee8;
+  font-size: clamp(28px, 4vw, 42px);
+}
+h2 {
+  margin-top: 42px;
+  padding: 12px 14px;
+  border-left: 5px solid #2563eb;
+  background: #f3f6fb;
+  border-radius: 8px;
+  font-size: 25px;
+}
+h3 { color: #28364a; }
+p {
+  margin: 10px 0 14px;
+  max-width: 820px;
+}
+img {
+  display: block;
+  max-width: min(100%, 900px);
+  height: auto;
+  margin: 14px auto;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+}
+table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+th, td { border: 1px solid #d8dee8; padding: 8px 10px; text-align: left; }
+blockquote { border-left: 4px solid #bfd0ea; margin-left: 0; padding: 6px 16px; color: #4d5868; background: #f3f6fb; }
+pre {
+  overflow-x: auto;
+  background: #0f172a;
+  color: #e5e7eb;
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-family: "Cascadia Mono", Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.55;
+}
+code {
+  font-family: "Cascadia Mono", Consolas, monospace;
+  background: #eef3fb;
+  border-radius: 5px;
+  padding: 1px 5px;
+}
+pre code { background: transparent; padding: 0; }
+.top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.top a {
+  display: inline-block;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 6px 10px;
+  background: #f7f9fc;
+}
+.reader-note {
+  color: #4d5868;
+  background: #f8fafc;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 18px 0 24px;
+}
+.toc {
+  background: #ffffff;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 18px 0 28px;
+}
+.toc strong {
+  display: block;
+  margin-bottom: 8px;
+}
+.toc a {
+  display: inline-block;
+  margin: 3px 12px 3px 0;
+  color: #28364a;
+}
+.cell {
+  margin: 20px 0;
+}
+.markdown-cell {
+  font-size: 16px;
+  max-width: 900px;
+}
+.markdown-cell > :first-child { margin-top: 0; }
+.markdown-cell > :last-child { margin-bottom: 0; }
+.markdown-cell li { margin: 4px 0; }
+.markdown-cell strong { color: #0f172a; }
+.heading-cell {
+  max-width: 100%;
+}
+.step-cell {
+  position: relative;
+  max-width: 900px;
+  margin: 16px 0;
+  padding: 16px 18px 16px 58px;
+  background: #fbfcff;
+  border: 1px solid #d8dee8;
+  border-left: 5px solid #12805c;
+  border-radius: 8px;
+}
+.step-cell .step-badge {
+  position: absolute;
+  left: 16px;
+  top: 15px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: #12805c;
+  font-weight: 700;
+  line-height: 1;
+}
+.step-cell p {
+  margin: 0 0 8px;
+  max-width: 780px;
+}
+.figure-cell {
+  max-width: 100%;
+  margin: 12px 0 26px;
+}
+.figure-cell p {
+  max-width: 100%;
+}
+.markdown-cell hr {
+  border: 0;
+  border-top: 1px solid #d8dee8;
+  margin: 28px 0;
+}
+.code-cell {
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+.code-head {
+  font-size: 13px;
+  color: #5e6878;
+  background: #eef3fb;
+  padding: 6px 10px;
+  border-bottom: 1px solid #d8dee8;
+}
+.code-cell pre { margin: 0; border-radius: 0; }
+.output {
+  border-top: 1px solid #d8dee8;
+  padding: 10px 12px;
+  background: #fbfcff;
+}
+.output pre {
+  background: #f3f6fb;
+  color: #18212f;
+  margin: 0;
+}
+.output img { box-shadow: none; }
+.inline-code {
+  font-family: "Cascadia Mono", Consolas, monospace;
+  color: #0f172a;
+  background: #eef3fb;
+  border: 1px solid #d8dee8;
+  border-radius: 5px;
+  padding: 1px 5px;
+  word-break: break-word;
+}
+@media (max-width: 760px) {
+  main { padding: 24px 16px 56px; border: 0; }
+  .top { flex-direction: column; align-items: stretch; }
+  .top a { text-align: center; }
+}
+</style>
+</head>
+<body>
+<main>
+<div class="top"><a href="../index.html">返回讲义目录</a><a href="https://github.com/AccumulateMore/CV/tree/main">原始 notebook 目录</a></div>
+<h1>247_文本预处理</h1>
+<div class="reader-note">这页由原始 Jupyter Notebook 转为浏览器阅读版：步骤说明会以绿色提示块展示，截图已内嵌到页面中，代码和命令会用深色或浅色代码样式区分。</div>
+
+<section id="section-1" class="cell markdown-cell heading-cell"><h2 id="1">1. 文本预处理</h2></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>import collections
+import re
+from d2l import torch as d2l</code></pre></section>
+<section class="cell markdown-cell step-cell"><span class="step-badge">①</span><p>将数据集读取到由文本行组成的列表中。</p></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 下载并存储 &#x27;time_machine&#x27; 数据集的 URL 和哈希值
+d2l.DATA_HUB[&#x27;time_machine&#x27;] = (d2l.DATA_URL + &#x27;timemachine.txt&#x27;,
+                               &#x27;090b5e7e70c295757f55df93cb0a180b9691891a&#x27;)  
+
+def read_time_machine():
+    &quot;&quot;&quot;Load the time machine dataset into a list of text lines. &quot;&quot;&quot;
+    &quot;&quot;&quot;将时间机器数据集加载为文本行的列表。&quot;&quot;&quot;
+    # 打开 &#x27;time_machine&#x27; 数据集文件，并使用文件对象 f 进行操作
+    with open(d2l.download(&#x27;time_machine&#x27;), &#x27;r&#x27;) as f:
+        # 读取文件的所有行，并将每行存储在列表 lines 中
+        lines = f.readlines()
+        # 把不是大写字母、小写字母的东西，全部变成空格
+        # 去除非字母字符，并转换为小写
+    return [re.sub(&#x27;[^A-Za-z]+&#x27;,&#x27; &#x27;,line).strip().lower() for line in lines]   
+
+# 读取时间机器数据集，并将结果存储在 &#x27;lines&#x27; 变量中
+lines = read_time_machine()
+# 打印数据集的第一行
+print(lines[0])
+# 打印数据集的第11行（索引为10）
+print(lines[10])</code></pre><div class="output"><pre>the time machine by h g wells
+twinkled and his usually pale face was flushed and animated the
+</pre></div></section>
+<section class="cell markdown-cell step-cell"><span class="step-badge">②</span><p>每个文本序列又被拆分成一个标记列表。</p></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>def tokenize(lines, token=&#x27;word&#x27;):
+    &quot;&quot;&quot;
+    将文本行列表进行分词处理。
+
+    Parameters:
+        lines (list): 文本行列表。
+        token (str): 令牌类型，可选值为 &#x27;word&#x27;（默认）或 &#x27;char&#x27;。
+
+    Returns:
+        list: 分词后的结果列表。
+
+    Raises:
+        None
+    &quot;&quot;&quot;
+    # 如果令牌类型为 &#x27;word&#x27;
+    if token == &#x27;word&#x27;:
+        # 以空格为分隔符将每行字符串拆分为单词列表
+        return [line.split() for line in lines]
+    # 如果令牌类型为 &#x27;char&#x27;
+    elif token == &#x27;char&#x27;:
+        # 将每行字符串拆分为字符列表
+        return [list(line) for line in lines]
+    else:
+        # 若指定的令牌类型无效，则打印错误信息
+        print(&#x27;错位：未知令牌类型：&#x27; + token)
+# 对 lines 进行分词处理，使用默认的 &#x27;word&#x27; 令牌类型        
+tokens = tokenize(lines)
+# 打印前11行的分词结果
+for i in range(11):
+    # 空列表表示空行
+    print(tokens[i]) </code></pre><div class="output"><pre>[&#x27;the&#x27;, &#x27;time&#x27;, &#x27;machine&#x27;, &#x27;by&#x27;, &#x27;h&#x27;, &#x27;g&#x27;, &#x27;wells&#x27;]
+[]
+[]
+[]
+[]
+[&#x27;i&#x27;]
+[]
+[]
+[&#x27;the&#x27;, &#x27;time&#x27;, &#x27;traveller&#x27;, &#x27;for&#x27;, &#x27;so&#x27;, &#x27;it&#x27;, &#x27;will&#x27;, &#x27;be&#x27;, &#x27;convenient&#x27;, &#x27;to&#x27;, &#x27;speak&#x27;, &#x27;of&#x27;, &#x27;him&#x27;]
+[&#x27;was&#x27;, &#x27;expounding&#x27;, &#x27;a&#x27;, &#x27;recondite&#x27;, &#x27;matter&#x27;, &#x27;to&#x27;, &#x27;us&#x27;, &#x27;his&#x27;, &#x27;grey&#x27;, &#x27;eyes&#x27;, &#x27;shone&#x27;, &#x27;and&#x27;]
+[&#x27;twinkled&#x27;, &#x27;and&#x27;, &#x27;his&#x27;, &#x27;usually&#x27;, &#x27;pale&#x27;, &#x27;face&#x27;, &#x27;was&#x27;, &#x27;flushed&#x27;, &#x27;and&#x27;, &#x27;animated&#x27;, &#x27;the&#x27;]
+</pre></div></section>
+<section class="cell markdown-cell step-cell"><span class="step-badge">③</span><p>构建一个字典，通常也叫做词表（vocabulary），用来你将字符串标记映射到从0开始的数字索引中。</p></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>class Vocab:
+    &quot;&quot;&quot;文本词表&quot;&quot;&quot;
+    def __init__(self, tokens=None,min_freq=0,reserved_tokens=None):
+        &quot;&quot;&quot;
+        初始化词表对象。
+
+        Parameters:
+            tokens (list): 标记列表（默认为 None）。
+            min_freq (int): 最小频率阈值，低于该频率的标记将被过滤掉（默认为 0）。
+            reserved_tokens (list): 保留的特殊标记列表（默认为 None）。
+
+        Returns:
+            None
+
+        Raises:
+            None
+        &quot;&quot;&quot;
+        # 如果输入的 tokens 为 None，则将其设置为空列表
+        if tokens is None:
+            tokens = []
+        # 如果保留的特殊标记列表 reserved_tokens 为 None，则将其设置为空列表
+        if reserved_tokens is None:
+            reserved_tokens = []
+        # 统计 tokens 中标记的频率，并返回一个包含标记频率的 Counter 对象
+        counter = count_corpus(tokens) # 遍历得到每一个独一无二token出现的次数
+        # 根据标记的频率进行排序，并将结果存储在 self.token_freqs 中
+        # sorted() 函数使用 counter.items() 作为排序对象，使用标记频率 x[1] 作为排序依据，降序排序
+        self.token_freqs = sorted(counter.items(),key=lambda x:x[1],reverse=True)
+        # 设置未知标记索引为 0，构建包含未知标记和保留特殊标记的列表 uniq_tokens
+        self.unk, uniq_tokens = 0, [&#x27;&lt;unk&gt;&#x27;] + reserved_tokens 
+        # 将频率大于等于 min_freq 且不在 uniq_tokens 中的标记添加到 uniq_tokens 列表中
+        uniq_tokens += [token for token, freq in self.token_freqs
+                       if freq &gt;= min_freq and token not in uniq_tokens]
+        # 初始化索引到标记和标记到索引的空列表和字典
+        self.idx_to_token, self.token_to_idx = [], dict()
+        # 遍历 uniq_tokens 中的每个标记，将其添加到索引到标记的列表中，并将标记和对应索引存储到标记到索引的字典中
+        # 索引值从 0 开始递增，对应于标记在列表中的位置
+        for token in uniq_tokens:
+            # 将当前标记 `token` 添加到索引到标记的列表 `self.idx_to_token` 的末尾
+            self.idx_to_token.append(token)
+            # 将当前标记 `token` 和其对应的索引值存储到标记到索引的字典 `self.token_to_idx` 中
+            # 索引值是 `self.idx_to_token` 列表的长度减去 1，即标记在列表中的位置索引
+            self.token_to_idx[token] = len(self.idx_to_token) - 1
+            
+    def __len__(self):
+        &quot;&quot;&quot;
+        获取词表的长度。
+
+        Parameters:
+            None
+
+        Returns:
+            int: 词表的长度。
+
+        Raises:
+            None
+        &quot;&quot;&quot;
+        # 获取词表的长度
+        return len(self.idx_to_token)
+    
+    def __getitem__(self, tokens):
+        &quot;&quot;&quot;
+        根据标记获取其对应的索引或索引列表。
+
+        Parameters:
+            tokens (str or list): 标记字符串或标记列表。
+
+        Returns:
+            int or list: 标记的索引或索引列表。
+
+        Raises:
+            None
+        &quot;&quot;&quot;
+        # 如果 tokens 不是列表或元组，则返回对应的索引或默认的未知标记索引
+        if not isinstance(tokens, (list, tuple)):
+            return self.token_to_idx.get(tokens, self.unk)
+        # 对于输入的标记列表 tokens，逐个调用 self.__getitem__() 方法获取每个标记对应的索引值，并返回索引值的列表  
+        return [self.__getitem__(token) for token in tokens]
+    
+    def to_tokens(self, indices):
+        &quot;&quot;&quot;
+        根据索引获取对应的标记或标记列表。
+
+        Parameters:
+            indices (int or list): 索引或索引列表。
+
+        Returns:
+            str or list: 索引对应的标记或标记列表。
+
+        Raises:
+            None
+        &quot;&quot;&quot;
+        # 如果输入的 indices 不是列表或元组类型，则返回对应索引值处的标记
+        if not isinstance(indices, (list, tuple)):
+            return self.idx_to_token[indices]
+        # 对于输入的索引列表 indices，逐个取出每个索引值 index，并通过 self.idx_to_token[index] 获取对应的标记值，最后返回标记值组成的列表
+        return [self.idx_to_token[index] for index in indices]
+    
+def count_corpus(tokens):
+    &quot;&quot;&quot;
+    统计标记的频率。
+
+    Parameters:
+        tokens (list): 标记列表。
+
+    Returns:
+        collections.Counter: 包含标记频率的 Counter 对象。
+
+    Raises:
+        None
+    &quot;&quot;&quot;
+    # 检查 tokens 是否是一个列表的列表
+    if len(tokens) == 0 or isinstance(tokens[0], list):
+        # 如果 tokens 是一个列表的列表，则将其展平为一维列表
+        tokens = [token for line in tokens for token in line]
+    # 使用 collections.Counter 统计标记的频率
+    return collections.Counter(tokens) </code></pre></section>
+<section class="cell markdown-cell step-cell"><span class="step-badge">④</span><p>构建词汇表</p></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 创建一个 Vocab 对象，将标记列表 tokens 作为参数传入，用于构建词表
+vocab = Vocab(tokens)
+# 获取词表中的前 10 个标记及其对应的索引值，并将其转换为列表进行打印输出
+print(list(vocab.token_to_idx.items())[:10])</code></pre><div class="output"><pre>[(&#x27;&lt;unk&gt;&#x27;, 0), (&#x27;the&#x27;, 1), (&#x27;i&#x27;, 2), (&#x27;and&#x27;, 3), (&#x27;of&#x27;, 4), (&#x27;a&#x27;, 5), (&#x27;to&#x27;, 6), (&#x27;was&#x27;, 7), (&#x27;in&#x27;, 8), (&#x27;that&#x27;, 9)]
+</pre></div></section>
+<section class="cell markdown-cell step-cell"><span class="step-badge">④</span><p>将每一行文本转换成一个数字索引列表。</p></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 遍历索引列表 [0, 10]
+for i in [0,10]:
+    # 打印当前索引 i 处的标记（单词）
+    print(&#x27;word:&#x27;, tokens[i])
+    # 获取当前标记在词表中的索引值
+    # 打印当前标记在词表中的索引值（对应的索引值或未知标记索引）
+    print(&#x27;indices:&#x27;,vocab[tokens[i]])</code></pre><div class="output"><pre>word: [&#x27;the&#x27;, &#x27;time&#x27;, &#x27;machine&#x27;, &#x27;by&#x27;, &#x27;h&#x27;, &#x27;g&#x27;, &#x27;wells&#x27;]
+indices: [1, 19, 50, 40, 2183, 2184, 400]
+word: [&#x27;twinkled&#x27;, &#x27;and&#x27;, &#x27;his&#x27;, &#x27;usually&#x27;, &#x27;pale&#x27;, &#x27;face&#x27;, &#x27;was&#x27;, &#x27;flushed&#x27;, &#x27;and&#x27;, &#x27;animated&#x27;, &#x27;the&#x27;]
+indices: [2186, 3, 25, 1044, 362, 113, 7, 1421, 3, 1045, 1]
+</pre></div></section>
+<section class="cell markdown-cell step-cell"><span class="step-badge">⑤</span><p>将所有内容打包到load_corpus_time_machine函数中。</p></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>def load_corpus_time_machine(max_tokens=-1):
+    &quot;&quot;&quot;返回时光机器数据集的标记索引列表和词汇表&quot;&quot;&quot;
+    # 加载时光机器数据集的文本行
+    lines = read_time_machine()
+    # 将文本行转换为字符标记列表
+    tokens = tokenize(lines, &#x27;char&#x27;)
+    # 构建词汇表
+    vocab = Vocab(tokens)
+    # 将文本转换为标记索引列表
+    corpus = [vocab[token] for line in tokens for token in line]  
+    # 截断文本长度（若有限制）
+    if max_tokens &gt; 0:
+        # 如果设置了最大标记数 max_tokens，对标记索引列表 corpus 进行截断，只保留前 max_tokens 个标记
+        corpus = corpus[:max_tokens]
+    # 返回截断后的标记索引列表 corpus 和词汇表 vocab
+    return corpus, vocab
+
+# 载入时光机器数据集的标记索引列表和词汇表
+corpus, vocab = load_corpus_time_machine()
+# 打印时光机器数据集的标记数和词汇表大小
+len(corpus), len(vocab)</code></pre><div class="output"><pre>(170580, 28)</pre></div></section>
+</main>
+</body>
+</html>

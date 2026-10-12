@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>116_优化器</title>
+<style>
+body {
+  margin: 0;
+  color: #18212f;
+  background: #eef3f8;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  line-height: 1.7;
+}
+main {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 34px 28px 80px;
+  background: #fff;
+  min-height: 100vh;
+  border-left: 1px solid #d8dee8;
+  border-right: 1px solid #d8dee8;
+}
+a { color: #2563eb; text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1, h2, h3, h4 { line-height: 1.25; margin-top: 1.45em; letter-spacing: 0; }
+h1 {
+  margin-top: 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #d8dee8;
+  font-size: clamp(28px, 4vw, 42px);
+}
+h2 {
+  margin-top: 42px;
+  padding: 12px 14px;
+  border-left: 5px solid #2563eb;
+  background: #f3f6fb;
+  border-radius: 8px;
+  font-size: 25px;
+}
+h3 { color: #28364a; }
+p {
+  margin: 10px 0 14px;
+  max-width: 820px;
+}
+img {
+  display: block;
+  max-width: min(100%, 900px);
+  height: auto;
+  margin: 14px auto;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+}
+table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+th, td { border: 1px solid #d8dee8; padding: 8px 10px; text-align: left; }
+blockquote { border-left: 4px solid #bfd0ea; margin-left: 0; padding: 6px 16px; color: #4d5868; background: #f3f6fb; }
+pre {
+  overflow-x: auto;
+  background: #0f172a;
+  color: #e5e7eb;
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-family: "Cascadia Mono", Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.55;
+}
+code {
+  font-family: "Cascadia Mono", Consolas, monospace;
+  background: #eef3fb;
+  border-radius: 5px;
+  padding: 1px 5px;
+}
+pre code { background: transparent; padding: 0; }
+.top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.top a {
+  display: inline-block;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 6px 10px;
+  background: #f7f9fc;
+}
+.reader-note {
+  color: #4d5868;
+  background: #f8fafc;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 18px 0 24px;
+}
+.toc {
+  background: #ffffff;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 18px 0 28px;
+}
+.toc strong {
+  display: block;
+  margin-bottom: 8px;
+}
+.toc a {
+  display: inline-block;
+  margin: 3px 12px 3px 0;
+  color: #28364a;
+}
+.cell {
+  margin: 20px 0;
+}
+.markdown-cell {
+  font-size: 16px;
+  max-width: 900px;
+}
+.markdown-cell > :first-child { margin-top: 0; }
+.markdown-cell > :last-child { margin-bottom: 0; }
+.markdown-cell li { margin: 4px 0; }
+.markdown-cell strong { color: #0f172a; }
+.heading-cell {
+  max-width: 100%;
+}
+.step-cell {
+  position: relative;
+  max-width: 900px;
+  margin: 16px 0;
+  padding: 16px 18px 16px 58px;
+  background: #fbfcff;
+  border: 1px solid #d8dee8;
+  border-left: 5px solid #12805c;
+  border-radius: 8px;
+}
+.step-cell .step-badge {
+  position: absolute;
+  left: 16px;
+  top: 15px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: #12805c;
+  font-weight: 700;
+  line-height: 1;
+}
+.step-cell p {
+  margin: 0 0 8px;
+  max-width: 780px;
+}
+.figure-cell {
+  max-width: 100%;
+  margin: 12px 0 26px;
+}
+.figure-cell p {
+  max-width: 100%;
+}
+.markdown-cell hr {
+  border: 0;
+  border-top: 1px solid #d8dee8;
+  margin: 28px 0;
+}
+.code-cell {
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+.code-head {
+  font-size: 13px;
+  color: #5e6878;
+  background: #eef3fb;
+  padding: 6px 10px;
+  border-bottom: 1px solid #d8dee8;
+}
+.code-cell pre { margin: 0; border-radius: 0; }
+.output {
+  border-top: 1px solid #d8dee8;
+  padding: 10px 12px;
+  background: #fbfcff;
+}
+.output pre {
+  background: #f3f6fb;
+  color: #18212f;
+  margin: 0;
+}
+.output img { box-shadow: none; }
+.inline-code {
+  font-family: "Cascadia Mono", Consolas, monospace;
+  color: #0f172a;
+  background: #eef3fb;
+  border: 1px solid #d8dee8;
+  border-radius: 5px;
+  padding: 1px 5px;
+  word-break: break-word;
+}
+@media (max-width: 760px) {
+  main { padding: 24px 16px 56px; border: 0; }
+  .top { flex-direction: column; align-items: stretch; }
+  .top a { text-align: center; }
+}
+</style>
+</head>
+<body>
+<main>
+<div class="top"><a href="../index.html">返回讲义目录</a><a href="https://github.com/AccumulateMore/CV/tree/main">原始 notebook 目录</a></div>
+<h1>116_优化器</h1>
+<div class="reader-note">这页由原始 Jupyter Notebook 转为浏览器阅读版：步骤说明会以绿色提示块展示，截图已内嵌到页面中，代码和命令会用深色或浅色代码样式区分。</div>
+<nav class="toc"><strong>本节目录</strong><a href="#section-1">1. 优化器</a><a href="#section-2">2. 神经网络优化一轮</a><a href="#section-3">3. 神经网络优化多轮</a><a href="#section-4">4. 神经网络学习率优化</a></nav>
+<section id="section-1" class="cell markdown-cell heading-cell"><h2 id="1">1. 优化器</h2></section>
+<section class="cell markdown-cell step-cell"><span class="step-badge">①</span><p>损失函数调用backward方法，就可以调用损失函数的反向传播方法，就可以求出我们需要调节的梯度，我们就可以利用我们的优化器就可以根据梯度对参数进行调整，达到整体误差降低的目的。</p>
+<p>② 梯度要清零，如果梯度不清零会导致梯度累加。</p></section>
+<section id="section-2" class="cell markdown-cell heading-cell"><h2 id="2">2. 神经网络优化一轮</h2></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>import torch
+import torchvision
+from torch import nn 
+from torch.nn import Conv2d, MaxPool2d, Flatten, Linear, Sequential
+from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
+
+dataset = torchvision.datasets.CIFAR10(&quot;./dataset&quot;,train=False,transform=torchvision.transforms.ToTensor(),download=True)       
+dataloader = DataLoader(dataset, batch_size=64,drop_last=True)
+
+class Tudui(nn.Module):
+    def __init__(self):
+        super(Tudui, self).__init__()        
+        self.model1 = Sequential(
+            Conv2d(3,32,5,padding=2),
+            MaxPool2d(2),
+            Conv2d(32,32,5,padding=2),
+            MaxPool2d(2),
+            Conv2d(32,64,5,padding=2),
+            MaxPool2d(2),
+            Flatten(),
+            Linear(1024,64),
+            Linear(64,10)
+        )
+        
+    def forward(self, x):
+        x = self.model1(x)
+        return x
+    
+loss = nn.CrossEntropyLoss() # 交叉熵    
+tudui = Tudui()
+optim = torch.optim.SGD(tudui.parameters(),lr=0.01)   # 随机梯度下降优化器
+for data in dataloader:
+    imgs, targets = data
+    outputs = tudui(imgs)
+    result_loss = loss(outputs, targets) # 计算实际输出与目标输出的差距
+    optim.zero_grad()  # 梯度清零
+    result_loss.backward() # 反向传播，计算损失函数的梯度
+    optim.step()   # 根据梯度，对网络的参数进行调优
+    print(result_loss) # 对数据只看了一遍，只看了一轮，所以loss下降不大</code></pre><div class="output"><pre>Files already downloaded and verified
+tensor(2.2978, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2988, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3163, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3253, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2952, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3066, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3085, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3106, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2960, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3053, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2892, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3090, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2956, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3041, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3012, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3043, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2760, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3051, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2951, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3168, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3140, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3096, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2945, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3115, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2987, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3029, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3096, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3064, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3161, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3129, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2903, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3043, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3034, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3169, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3090, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3039, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3019, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3071, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3018, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3083, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2994, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2909, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3130, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2993, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2906, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3084, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3123, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2931, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3059, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3117, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2975, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3109, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3029, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3020, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3022, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3005, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2920, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3016, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3053, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3082, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3011, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3040, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3130, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2981, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2977, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2994, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3075, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3016, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2966, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3015, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3000, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2953, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2958, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2977, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2928, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2989, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2968, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2982, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2912, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3005, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2909, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2940, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2959, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2993, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2933, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2951, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2824, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2987, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2961, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2914, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3025, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2895, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2943, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2974, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2977, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3069, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2972, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2979, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2932, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2940, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3014, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2958, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3013, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2953, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2951, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3116, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2916, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2871, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2975, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2950, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3039, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2901, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2950, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2958, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2893, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2917, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3001, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2988, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3069, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3083, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2841, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2932, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2857, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2971, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2999, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2911, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2977, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3027, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2940, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2939, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2950, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2951, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3000, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2935, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2817, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2977, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3067, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2742, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2964, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2927, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2941, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3003, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2965, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2908, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2885, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2984, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.3009, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2931, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2856, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2907, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2938, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2880, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2975, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2922, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2966, grad_fn=&lt;NllLossBackward0&gt;)
+tensor(2.2804, grad_fn=&lt;NllLossBackward0&gt;)
+</pre></div></section>
+<section id="section-3" class="cell markdown-cell heading-cell"><h2 id="3">3. 神经网络优化多轮</h2></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>import torch
+import torchvision
+from torch import nn 
+from torch.nn import Conv2d, MaxPool2d, Flatten, Linear, Sequential
+from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
+
+dataset = torchvision.datasets.CIFAR10(&quot;./dataset&quot;,train=False,transform=torchvision.transforms.ToTensor(),download=True)       
+dataloader = DataLoader(dataset, batch_size=64,drop_last=True)
+
+class Tudui(nn.Module):
+    def __init__(self):
+        super(Tudui, self).__init__()        
+        self.model1 = Sequential(
+            Conv2d(3,32,5,padding=2),
+            MaxPool2d(2),
+            Conv2d(32,32,5,padding=2),
+            MaxPool2d(2),
+            Conv2d(32,64,5,padding=2),
+            MaxPool2d(2),
+            Flatten(),
+            Linear(1024,64),
+            Linear(64,10)
+        )
+        
+    def forward(self, x):
+        x = self.model1(x)
+        return x
+    
+loss = nn.CrossEntropyLoss() # 交叉熵    
+tudui = Tudui()
+optim = torch.optim.SGD(tudui.parameters(),lr=0.01)   # 随机梯度下降优化器
+for epoch in range(20):
+    running_loss = 0.0
+    for data in dataloader:
+        imgs, targets = data
+        outputs = tudui(imgs)
+        result_loss = loss(outputs, targets) # 计算实际输出与目标输出的差距
+        optim.zero_grad()  # 梯度清零
+        result_loss.backward() # 反向传播，计算损失函数的梯度
+        optim.step()   # 根据梯度，对网络的参数进行调优
+        running_loss = running_loss + result_loss
+    print(running_loss) # 对这一轮所有误差的总和</code></pre><div class="output"><pre>Files already downloaded and verified
+tensor(358.1069, grad_fn=&lt;AddBackward0&gt;)
+tensor(353.8411, grad_fn=&lt;AddBackward0&gt;)
+tensor(337.3790, grad_fn=&lt;AddBackward0&gt;)
+tensor(317.3237, grad_fn=&lt;AddBackward0&gt;)
+tensor(307.6762, grad_fn=&lt;AddBackward0&gt;)
+tensor(298.2425, grad_fn=&lt;AddBackward0&gt;)
+tensor(289.7010, grad_fn=&lt;AddBackward0&gt;)
+tensor(282.7116, grad_fn=&lt;AddBackward0&gt;)
+tensor(275.8972, grad_fn=&lt;AddBackward0&gt;)
+tensor(269.5961, grad_fn=&lt;AddBackward0&gt;)
+tensor(263.8480, grad_fn=&lt;AddBackward0&gt;)
+tensor(258.5006, grad_fn=&lt;AddBackward0&gt;)
+tensor(253.4671, grad_fn=&lt;AddBackward0&gt;)
+tensor(248.7994, grad_fn=&lt;AddBackward0&gt;)
+tensor(244.4917, grad_fn=&lt;AddBackward0&gt;)
+tensor(240.5728, grad_fn=&lt;AddBackward0&gt;)
+tensor(236.9719, grad_fn=&lt;AddBackward0&gt;)
+tensor(233.6264, grad_fn=&lt;AddBackward0&gt;)
+tensor(230.4298, grad_fn=&lt;AddBackward0&gt;)
+tensor(227.3427, grad_fn=&lt;AddBackward0&gt;)
+</pre></div></section>
+<section id="section-4" class="cell markdown-cell heading-cell"><h2 id="4">4. 神经网络学习率优化</h2></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>import torch
+import torchvision
+from torch import nn 
+from torch.nn import Conv2d, MaxPool2d, Flatten, Linear, Sequential
+from torch.utils.data import DataLoader
+from torch.utils.tensorboard import SummaryWriter
+
+dataset = torchvision.datasets.CIFAR10(&quot;./dataset&quot;,train=False,transform=torchvision.transforms.ToTensor(),download=True)       
+dataloader = DataLoader(dataset, batch_size=64,drop_last=True)
+
+class Tudui(nn.Module):
+    def __init__(self):
+        super(Tudui, self).__init__()        
+        self.model1 = Sequential(
+            Conv2d(3,32,5,padding=2),
+            MaxPool2d(2),
+            Conv2d(32,32,5,padding=2),
+            MaxPool2d(2),
+            Conv2d(32,64,5,padding=2),
+            MaxPool2d(2),
+            Flatten(),
+            Linear(1024,64),
+            Linear(64,10)
+        )
+        
+    def forward(self, x):
+        x = self.model1(x)
+        return x
+    
+loss = nn.CrossEntropyLoss() # 交叉熵    
+tudui = Tudui()
+optim = torch.optim.SGD(tudui.parameters(),lr=0.01)   # 随机梯度下降优化器
+scheduler = torch.optim.lr_scheduler.StepLR(optim, step_size=5, gamma=0.1) # 每过 step_size 更新一次优化器，更新是学习率为原来的学习率的的 0.1 倍    
+for epoch in range(20):
+    running_loss = 0.0
+    for data in dataloader:
+        imgs, targets = data
+        outputs = tudui(imgs)
+        result_loss = loss(outputs, targets) # 计算实际输出与目标输出的差距
+        optim.zero_grad()  # 梯度清零
+        result_loss.backward() # 反向传播，计算损失函数的梯度
+        optim.step()   # 根据梯度，对网络的参数进行调优
+        scheduler.step() # 学习率太小了，所以20个轮次后，相当于没走多少
+        running_loss = running_loss + result_loss
+    print(running_loss) # 对这一轮所有误差的总和</code></pre><div class="output"><pre>Files already downloaded and verified
+tensor(359.4722, grad_fn=&lt;AddBackward0&gt;)
+tensor(359.4630, grad_fn=&lt;AddBackward0&gt;)
+tensor(359.4630, grad_fn=&lt;AddBackward0&gt;)
+tensor(359.4630, grad_fn=&lt;AddBackward0&gt;)
+tensor(359.4630, grad_fn=&lt;AddBackward0&gt;)
+tensor(359.4630, grad_fn=&lt;AddBackward0&gt;)
+tensor(359.4630, grad_fn=&lt;AddBackward0&gt;)
+tensor(359.4630, grad_fn=&lt;AddBackward0&gt;)
+tensor(359.4630, grad_fn=&lt;AddBackward0&gt;)
+tensor(359.4630, grad_fn=&lt;AddBackward0&gt;)
+tensor(359.4630, grad_fn=&lt;AddBackward0&gt;)
+tensor(359.4630, grad_fn=&lt;AddBackward0&gt;)
+tensor(359.4630, grad_fn=&lt;AddBackward0&gt;)
+tensor(359.4630, grad_fn=&lt;AddBackward0&gt;)
+tensor(359.4630, grad_fn=&lt;AddBackward0&gt;)
+tensor(359.4630, grad_fn=&lt;AddBackward0&gt;)
+tensor(359.4630, grad_fn=&lt;AddBackward0&gt;)
+tensor(359.4630, grad_fn=&lt;AddBackward0&gt;)
+tensor(359.4630, grad_fn=&lt;AddBackward0&gt;)
+tensor(359.4630, grad_fn=&lt;AddBackward0&gt;)
+</pre></div></section>
+</main>
+</body>
+</html>

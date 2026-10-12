@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>261_使用注意力机制的seq2seq</title>
+<style>
+body {
+  margin: 0;
+  color: #18212f;
+  background: #eef3f8;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  line-height: 1.7;
+}
+main {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 34px 28px 80px;
+  background: #fff;
+  min-height: 100vh;
+  border-left: 1px solid #d8dee8;
+  border-right: 1px solid #d8dee8;
+}
+a { color: #2563eb; text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1, h2, h3, h4 { line-height: 1.25; margin-top: 1.45em; letter-spacing: 0; }
+h1 {
+  margin-top: 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #d8dee8;
+  font-size: clamp(28px, 4vw, 42px);
+}
+h2 {
+  margin-top: 42px;
+  padding: 12px 14px;
+  border-left: 5px solid #2563eb;
+  background: #f3f6fb;
+  border-radius: 8px;
+  font-size: 25px;
+}
+h3 { color: #28364a; }
+p {
+  margin: 10px 0 14px;
+  max-width: 820px;
+}
+img {
+  display: block;
+  max-width: min(100%, 900px);
+  height: auto;
+  margin: 14px auto;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+}
+table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+th, td { border: 1px solid #d8dee8; padding: 8px 10px; text-align: left; }
+blockquote { border-left: 4px solid #bfd0ea; margin-left: 0; padding: 6px 16px; color: #4d5868; background: #f3f6fb; }
+pre {
+  overflow-x: auto;
+  background: #0f172a;
+  color: #e5e7eb;
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-family: "Cascadia Mono", Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.55;
+}
+code {
+  font-family: "Cascadia Mono", Consolas, monospace;
+  background: #eef3fb;
+  border-radius: 5px;
+  padding: 1px 5px;
+}
+pre code { background: transparent; padding: 0; }
+.top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.top a {
+  display: inline-block;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 6px 10px;
+  background: #f7f9fc;
+}
+.reader-note {
+  color: #4d5868;
+  background: #f8fafc;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin: 18px 0 24px;
+}
+.toc {
+  background: #ffffff;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin: 18px 0 28px;
+}
+.toc strong {
+  display: block;
+  margin-bottom: 8px;
+}
+.toc a {
+  display: inline-block;
+  margin: 3px 12px 3px 0;
+  color: #28364a;
+}
+.cell {
+  margin: 20px 0;
+}
+.markdown-cell {
+  font-size: 16px;
+  max-width: 900px;
+}
+.markdown-cell > :first-child { margin-top: 0; }
+.markdown-cell > :last-child { margin-bottom: 0; }
+.markdown-cell li { margin: 4px 0; }
+.markdown-cell strong { color: #0f172a; }
+.heading-cell {
+  max-width: 100%;
+}
+.step-cell {
+  position: relative;
+  max-width: 900px;
+  margin: 16px 0;
+  padding: 16px 18px 16px 58px;
+  background: #fbfcff;
+  border: 1px solid #d8dee8;
+  border-left: 5px solid #12805c;
+  border-radius: 8px;
+}
+.step-cell .step-badge {
+  position: absolute;
+  left: 16px;
+  top: 15px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: #12805c;
+  font-weight: 700;
+  line-height: 1;
+}
+.step-cell p {
+  margin: 0 0 8px;
+  max-width: 780px;
+}
+.figure-cell {
+  max-width: 100%;
+  margin: 12px 0 26px;
+}
+.figure-cell p {
+  max-width: 100%;
+}
+.markdown-cell hr {
+  border: 0;
+  border-top: 1px solid #d8dee8;
+  margin: 28px 0;
+}
+.code-cell {
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+.code-head {
+  font-size: 13px;
+  color: #5e6878;
+  background: #eef3fb;
+  padding: 6px 10px;
+  border-bottom: 1px solid #d8dee8;
+}
+.code-cell pre { margin: 0; border-radius: 0; }
+.output {
+  border-top: 1px solid #d8dee8;
+  padding: 10px 12px;
+  background: #fbfcff;
+}
+.output pre {
+  background: #f3f6fb;
+  color: #18212f;
+  margin: 0;
+}
+.output img { box-shadow: none; }
+.inline-code {
+  font-family: "Cascadia Mono", Consolas, monospace;
+  color: #0f172a;
+  background: #eef3fb;
+  border: 1px solid #d8dee8;
+  border-radius: 5px;
+  padding: 1px 5px;
+  word-break: break-word;
+}
+@media (max-width: 760px) {
+  main { padding: 24px 16px 56px; border: 0; }
+  .top { flex-direction: column; align-items: stretch; }
+  .top a { text-align: center; }
+}
+</style>
+</head>
+<body>
+<main>
+<div class="top"><a href="../index.html">返回讲义目录</a><a href="https://github.com/AccumulateMore/CV/tree/main">原始 notebook 目录</a></div>
+<h1>261_使用注意力机制的seq2seq</h1>
+<div class="reader-note">这页由原始 Jupyter Notebook 转为浏览器阅读版：步骤说明会以绿色提示块展示，截图已内嵌到页面中，代码和命令会用深色或浅色代码样式区分。</div>
+
+<section id="section-1" class="cell markdown-cell heading-cell"><h2 id="1-seq2seq">1. 使用注意力机制的seq2seq</h2></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>import torch
+from torch import nn
+from d2l import torch as d2l
+import os</code></pre></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 带有注意力机制的解码器基本接口
+class AttentionDecoder(d2l.Decoder):
+    &quot;&quot;&quot;带有注意力机制的解码器基本接口&quot;&quot;&quot;
+    def __init__(self, **kwargs):
+        super(AttentionDecoder, self).__init__(**kwargs)
+        
+    @property
+    def attention_weight(self):
+        raise NotImplementedError</code></pre></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 实现带有Bahdanau注意力的循环神经网络解码器
+class Seq2SeqAttentionDecoder(AttentionDecoder):
+    def __init__(self, vocab_size, embed_size, num_hiddens, num_layers, dropout=0, **kwargs):
+        # 调用父类AttentionDecoder的构造函数进行初始化
+        super(Seq2SeqAttentionDecoder, self).__init__(**kwargs)
+        # 创建一个加性注意力机制的实例，用于计算注意力权重
+        self.attention = d2l.AdditiveAttention(num_hiddens, num_hiddens, num_hiddens, dropout)  
+        # 创建一个嵌入层，用于将输入的整数序列进行嵌入表示
+        self.embedding = nn.Embedding(vocab_size, embed_size)
+        # 创建一个GRU层，用于实现循环神经网络的计算
+        self.rnn = nn.GRU(embed_size + num_hiddens, num_hiddens, num_layers, dropout=dropout)  
+        # 创建一个线性层，将隐藏状态映射到词汇表大小的输出
+        self.dense = nn.Linear(num_hiddens, vocab_size)
+        
+    def init_state(self, enc_outputs, enc_valid_lens, *args):
+        # 将编码器的输出解包为outputs和hidden_state
+        outputs, hidden_state = enc_outputs
+        # 对outputs进行维度变换，将batch维和时间步维交换，保持与解码器输入的一致性
+        # 返回初始化的解码器隐藏状态
+        return (outputs.permute(1, 0, 2), hidden_state, enc_valid_lens)
+    
+    def forward(self, X, state):
+        # 解析输入的状态信息，包括编码器的输出、隐藏状态和有效长度
+        enc_outputs, hidden_state, enc_valid_lens = state
+        # 对输入序列进行嵌入表示，并进行维度变换，将batch维和时间步维交换
+        X = self.embedding(X).permute(1, 0, 2)
+        # 初始化输出列表和注意力权重列表
+        outputs, self._attention_weights = [], []
+        for x in X:
+            # 获取当前时间步的查询向量，将隐藏状态的最后一个时间步的特征进行维度扩展
+            query = torch.unsqueeze(hidden_state[-1], dim=1)
+            # 计算注意力上下文向量，通过注意力机制对编码器的输出进行加权求和
+            context = self.attention(query, enc_outputs, enc_outputs, enc_valid_lens)  
+            # 将注意力上下文向量与当前时间步的输入进行拼接，用于输入到循环神经网络
+            x = torch.cat((context, torch.unsqueeze(x, dim=1)), dim=-1)
+            # 执行循环神经网络的前向计算，得到输出和更新后的隐藏状态
+            out, hidden_state = self.rnn(x.permute(1,0,2),hidden_state)
+            # 将输出和注意力权重添加到对应的列表中
+            outputs.append(out)
+            self._attention_weights.append(self.attention.attention_weights)
+        # 将输出列表中的结果进行拼接，并通过线性层进行映射
+        outputs = self.dense(torch.cat(outputs, dim=0))
+        # 对输出进行维度变换，将batch维和时间步维交换，并返回更新后的状态信息
+        return outputs.permute(1, 0, 2), [enc_outputs, hidden_state, enc_valid_lens]  
+    
+    @property
+    def attention_weights(self):
+        # 返回注意力权重
+        return self._attention_weights</code></pre></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 测试Bahdanau注意力解码器
+# 创建编码器和解码器的实例
+encoder = d2l.Seq2SeqEncoder(vocab_size = 10, embed_size=8, num_hiddens=16, num_layers=2)  
+encoder.eval()
+decoder = Seq2SeqAttentionDecoder(vocab_size=10, embed_size=8, num_hiddens=16,num_layers=2)  
+decoder.eval()
+# 创建输入序列X
+X = torch.zeros((4,7), dtype=torch.long)
+# 初始化解码器的状态
+state = decoder.init_state(encoder(X), None)
+# 执行解码器的前向计算
+output, state = decoder(X, state)
+# 输出结果的形状以及状态信息的长度和形状
+output.shape, len(state), state[0].shape, len(state[1]), state[1][0].shape</code></pre><div class="output"><pre>(torch.Size([4, 7, 10]), 3, torch.Size([4, 7, 16]), 2, torch.Size([4, 16]))</pre></div></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>def read_data_nmt():
+    &quot;&quot;&quot;载入 “英语-法语” 数据集 &quot;&quot;&quot;
+    # 下载并解压数据集
+    data_dir = d2l.download_extract(&#x27;fra-eng&#x27;)
+    # 打开数据文件，使用utf-8编码读取文件内容
+    with open(os.path.join(data_dir, &#x27;fra.txt&#x27;), &#x27;r&#x27;, encoding=&#x27;utf-8&#x27;) as f:
+        # 返回读取的文件内容
+        return f.read()</code></pre></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>def preprocess_nmt(text):
+    &quot;&quot;&quot;预处理 “英语-法语” 数据集&quot;&quot;&quot;
+    def no_space(char, prev_char):
+        # 检查是否需要在字符之前添加空格
+        return char in set(&#x27;,.!?&#x27;) and prev_char != &#x27;&#x27;
+    # 替换特殊字符为空格并转换为小写
+    text = text.replace(&#x27;\u202f&#x27;, &#x27; &#x27;).replace(&#x27;\xa0&#x27;,&#x27; &#x27;).lower()
+    # 根据规则在字符之前添加空格
+    out = [
+        &#x27; &#x27; + char if i &gt; 0 and no_space(char, text[i - 1]) else char
+        for i, char in enumerate(text)]
+    # 将处理后的字符列表连接成字符串并返回
+    return &#x27;&#x27;.join(out)</code></pre></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>def tokenize_nmt(text, num_examples=None):
+    &quot;&quot;&quot;词元化 “英语-法语” 数据数据集 &quot;&quot;&quot;
+    # 初始化源语言和目标语言的列表
+    source, target = [], []
+    # 对每行文本进行遍历
+    for i, line in enumerate(text.split(&#x27;\n&#x27;)):
+        # 如果指定了num_examples，并且超过了指定数量，则退出循环
+        if num_examples and i &gt; num_examples:
+            break
+        # 将每行文本按制表符分割成源语言和目标语言的部分
+        parts = line.split(&#x27;\t&#x27;)
+        # 如果分割后有两个部分，说明包含了源语言和目标语言的内容
+        if len(parts) == 2:
+            # 将源语言部分以空格为分隔符进行词元化，存储到源语言列表中
+            source.append(parts[0].split(&#x27; &#x27;))
+            # 将目标语言部分以空格为分隔符进行词元化，存储到目标语言列表中
+            target.append(parts[1].split(&#x27; &#x27;))
+    # 返回词元化后的源语言列表和目标语言列表
+    return source, target</code></pre></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>def truncate_pad(line, num_steps, padding_token):
+    &quot;&quot;&quot;截断或填充文本序列&quot;&quot;&quot;
+    # 如果文本序列的长度超过了指定的步数
+    if len(line) &gt; num_steps:
+        # 截断文本序列，保留前num_steps个元素
+        return line[:num_steps]
+    # 在文本序列末尾填充padding_token，使其长度达到num_steps
+    return line + [padding_token] * (num_steps - len(line))</code></pre></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>def build_array_nmt(lines, vocab, num_steps):
+    &quot;&quot;&quot;将机器翻译的文本序列转换成小批量&quot;&quot;&quot;
+    # 将文本序列中的每个词根据词汇表转换为对应的索引
+    lines = [vocab[l] for l in lines]
+    # 在每个文本序列末尾添加&lt;eos&gt;表示句子结束的索引
+    lines = [l + [vocab[&#x27;&lt;eos&gt;&#x27;]] for l in lines]
+    # 将每个文本序列截断或填充为固定长度，并转换为tensor形式
+    array = torch.tensor([ truncate_pad(l, num_steps, vocab[&#x27;&lt;pad&gt;&#x27;]) for l in lines ])
+    # 计算有效长度，即非填充部分的长度
+    valid_len = (array != vocab[&#x27;&lt;pad&gt;&#x27;]).type(torch.int32).sum(1)
+    # 返回转换后的tensor形式的文本序列和有效长度
+    return array, valid_len</code></pre></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code>def load_data_nmt(batch_size, num_steps, num_examples=600):
+    &quot;&quot;&quot;返回翻译数据集的迭代器和词汇表&quot;&quot;&quot;
+    # 载入并预处理文本数据集
+    text = preprocess_nmt(read_data_nmt())
+    # 将文本数据集进行词元化
+    source, target = tokenize_nmt(text, num_examples)
+    # 构建源语言的词汇表对象
+    src_vocab = d2l.Vocab(source, min_freq=2,
+                         reserved_tokens=[&#x27;&lt;pad&gt;&#x27;,&#x27;&lt;bos&gt;&#x27;,&#x27;&lt;eos&gt;&#x27;])
+    # 构建目标语言的词汇表对象
+    tgt_vocab = d2l.Vocab(target, min_freq=2,
+                         reserved_tokens=[&#x27;&lt;pad&gt;&#x27;,&#x27;&lt;bos&gt;&#x27;,&#x27;&lt;eos&gt;&#x27;])
+    # 将源语言文本序列转换为小批量数据，并获取有效长度
+    src_array, src_valid_len = build_array_nmt(source, src_vocab, num_steps)  
+    # 将目标语言文本序列转换为小批量数据，并获取有效长度
+    tgt_array, tgt_valid_len = build_array_nmt(target, tgt_vocab, num_steps)
+    # 构建数据集的数组
+    data_arrays = (src_array, src_valid_len, tgt_array, tgt_valid_len)
+    # 构建数据迭代器
+    data_iter = d2l.load_array(data_arrays, batch_size)
+    # 返回数据迭代器和词汇表对象
+    return data_iter, src_vocab, tgt_vocab</code></pre></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 训练
+# 设置嵌入大小、隐藏层大小、层数和丢弃率
+embed_size, num_hiddens, num_layers, dropout = 32, 32, 2, 0.1
+# 设置批量大小和序列长度
+batch_size, num_steps = 64, 10
+# 设置学习率、训练轮数和设备（GPU或CPU）
+lr, num_epochs, device = 0.005, 250, d2l.try_gpu()
+
+# 载入翻译数据集，并获取数据迭代器和词汇表
+train_iter, src_vocab, tgt_vocab = load_data_nmt(batch_size, num_steps)  
+# 创建源语言的编码器实例
+encoder = d2l.Seq2SeqEncoder(len(src_vocab), embed_size, num_hiddens, num_layers, dropout)  
+# 创建目标语言的带有注意力机制的解码器实例
+decoder = Seq2SeqAttentionDecoder(len(tgt_vocab), embed_size, num_hiddens, num_layers, dropout)   
+# 创建编码-解码模型实例
+net = d2l.EncoderDecoder(encoder, decoder)
+# 训练序列到序列模型
+d2l.train_seq2seq(net, train_iter, lr, num_epochs, tgt_vocab, device)</code></pre><div class="output"><pre>loss 0.018, 7276.1 tokens/sec on cuda:0
+</pre></div><div class="output"><pre>&lt;Figure size 252x180 with 1 Axes&gt;</pre></div></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 将几个英语句子翻译成汉语
+# 英语句子列表
+engs = [&#x27;go&#x27;, &quot;i lost .&quot;, &#x27;he\&#x27;s calm .&#x27;, &#x27;i\&#x27;m home .&#x27;] 
+# 对应的汉语句子列表
+fras = [&#x27;va !&#x27;, &#x27;j\&#x27; ai perdu .&#x27;, &#x27;il est calme .&#x27;, &#x27;je suis chez moi .&#x27;]
+# 遍历英语句子和汉语句子的对应关系
+for eng, fra in zip(engs, fras):
+    # 使用训练好的模型net对英语句子进行翻译，并获取注意力权重序列
+    translation, dec_attention_weight_seq = d2l.predict_seq2seq(net, eng, src_vocab,
+                                                               tgt_vocab, num_steps, device, True)   
+    # 打印英语句子、翻译结果和BLEU分数
+    print(f&#x27; {eng} =&gt; {translation}, &#x27;,
+         f&#x27;bleu {d2l.bleu(translation, fra, k=2):.3f}&#x27;)</code></pre><div class="output"><pre> go =&gt; va  !,  bleu 0.000
+ i lost . =&gt; j&#x27;ai perdu .,  bleu 0.492
+ he&#x27;s calm . =&gt; il est malade .,  bleu 0.658
+ i&#x27;m home . =&gt; je suis chez moi .,  bleu 1.000
+</pre></div></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 将注意力权重序列进行拼接，并调整形状
+attention_weights = torch.cat([step[0][0][0] for step in dec_attention_weight_seq], 0).reshape((1, 1, -1, num_steps))     </code></pre></section>
+<section class="cell code-cell"><div class="code-head">代码</div><pre><code># 可视化注意力权重
+# 显示注意力权重的热图，仅显示与输入英语句子对应的位置
+d2l.show_heatmaps(attention_weights[:,:,:,:len(engs[-1].split()) + 1].cpu(),
+                 xlabel = &#x27;key positions&#x27;, ylabel = &#x27;Query posistions&#x27;)</code></pre><div class="output"><pre>&lt;Figure size 180x180 with 2 Axes&gt;</pre></div></section>
+</main>
+</body>
+</html>

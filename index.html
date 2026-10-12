@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>深度学习 / CV / NLP / Agent 学习讲义</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #18212f;
+      --muted: #5e6878;
+      --line: #d8dee8;
+      --paper: #f7f9fc;
+      --panel: #ffffff;
+      --blue: #2563eb;
+      --green: #12805c;
+      --red: #b42318;
+      --amber: #a15c07;
+      --violet: #6d38c5;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      line-height: 1.65;
+      color: var(--ink);
+      background: var(--paper);
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .shell {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 36px 22px 72px;
+    }
+    header {
+      padding: 28px 0 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(30px, 5vw, 54px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+    h2 {
+      margin: 44px 0 16px;
+      font-size: 28px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 8px;
+    }
+    h3 {
+      margin: 28px 0 10px;
+      font-size: 20px;
+    }
+    p { margin: 8px 0 12px; }
+    .lead {
+      max-width: 880px;
+      font-size: 18px;
+      color: var(--muted);
+    }
+    .quick {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin: 22px 0 4px;
+    }
+    .box, .chapter, .plan-row {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+    }
+    .box strong { display: block; margin-bottom: 6px; }
+    .toc {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 10px;
+      padding: 0;
+      margin: 18px 0;
+      list-style: none;
+    }
+    .toc a {
+      display: block;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--ink);
+    }
+    .chapter { margin: 18px 0; }
+    .chapter h3 {
+      margin-top: 0;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .tag {
+      display: inline-block;
+      font-size: 12px;
+      color: #fff;
+      background: var(--blue);
+      border-radius: 999px;
+      padding: 2px 8px;
+      white-space: nowrap;
+    }
+    .tag.green { background: var(--green); }
+    .tag.red { background: var(--red); }
+    .tag.amber { background: var(--amber); }
+    .tag.violet { background: var(--violet); }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(260px, 360px);
+      gap: 18px;
+    }
+    ul { padding-left: 22px; }
+    li { margin: 5px 0; }
+    code {
+      background: #edf1f7;
+      padding: 1px 5px;
+      border-radius: 5px;
+      font-family: "Cascadia Mono", Consolas, monospace;
+      font-size: 0.94em;
+    }
+    .notebooks {
+      padding: 10px 12px;
+      background: #f3f6fb;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    .notebooks a { display: inline-block; margin: 2px 8px 2px 0; }
+    .path {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(150px, 1fr));
+      gap: 12px;
+      margin: 18px 0;
+    }
+    .node {
+      position: relative;
+      min-height: 110px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .node b { display: block; margin-bottom: 6px; }
+    .node small { color: var(--muted); }
+    .node:after {
+      content: "→";
+      position: absolute;
+      right: -15px;
+      top: 38%;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .node:nth-child(5n):after,
+    .node:last-child:after { content: ""; }
+    .plan {
+      display: grid;
+      gap: 10px;
+    }
+    .plan-row {
+      display: grid;
+      grid-template-columns: 110px minmax(0, 1fr) minmax(230px, 0.7fr);
+      gap: 14px;
+      align-items: start;
+    }
+    .week {
+      font-weight: 700;
+      color: var(--blue);
+    }
+    .muted { color: var(--muted); }
+    .warn {
+      border-left: 4px solid var(--amber);
+      background: #fff8ec;
+      padding: 12px 14px;
+      border-radius: 6px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      padding: 10px 12px;
+      vertical-align: top;
+    }
+    th { background: #eef3fb; }
+    tr:last-child td { border-bottom: 0; }
+    @media (max-width: 860px) {
+      .grid-2, .plan-row { grid-template-columns: 1fr; }
+      .path { grid-template-columns: 1fr; }
+      .node:after { content: ""; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <h1>深度学习 / CV / NLP / Agent 学习讲义</h1>
+      <p class="lead">基于 AccumulateMore/CV 仓库整理：从 PyTorch 入门，到深度学习基础，再到计算机视觉、序列模型、Transformer/BERT，最后过渡到大模型 Agent 与 RAG。目标不是把所有 notebook 逐字看完，而是按能力递进建立一条能跑通代码、能理解模型、能完成项目的学习路径。</p>
+      <div class="quick">
+        <div class="box"><strong>原始资料</strong><a href="https://github.com/AccumulateMore/CV">AccumulateMore/CV</a> · <a href="https://github.com/AccumulateMore/CV/tree/main">原始 notebook 目录</a></div>
+        <div class="box"><strong>数据集</strong><a href="https://pan.baidu.com/s/1KTW2WsTy6TFpNdK_WwjBmg">百度网盘</a>，提取码：<code>ppmu</code></div>
+        <div class="box"><strong>浏览器版笔记</strong><a href="notebooks/100_配置版本.html">从第 100 节开始阅读</a>，原始 .ipynb 已转换为 HTML。</div>
+        <div class="box"><strong>建议阅读方式</strong>先看本讲义定路线；想改代码时，再用 Jupyter Notebook 打开原始 .ipynb 实操。</div>
+      </div>
+    </header>
+
+    <h2>课程视频入口</h2>
+    <table>
+      <thead><tr><th>资料段</th><th>主讲 / 主题</th><th>视频链接</th><th>本地笔记范围</th></tr></thead>
+      <tbody>
+        <tr><td>100-122</td><td>土堆：PyTorch 入门与完整训练流程</td><td><a href="https://www.bilibili.com/video/BV1hE411t7RN">Bilibili BV1hE411t7RN</a></td><td><code>100_配置版本</code> 到 <code>122_查看开源项目</code></td></tr>
+        <tr><td>200-268</td><td>李沐：动手学深度学习，覆盖 CV/NLP/Transformer</td><td><a href="https://space.bilibili.com/1567748478/lists/358497?type=series">Bilibili 合集</a></td><td><code>200_深度学习介绍</code> 到 <code>268_课程总结和进阶学习</code></td></tr>
+        <tr><td>300-354</td><td>吴恩达：深度学习专项课程</td><td><a href="https://www.bilibili.com/video/BV1FT4y1E74V">Bilibili BV1FT4y1E74V</a></td><td><code>301_课程1</code> 到 <code>354_课程5</code></td></tr>
+        <tr><td>400-409</td><td>大模型 Agent / RAG / API</td><td>原仓库 README 未填写具体视频 URL</td><td><code>400_配置版本</code> 到 <code>409_多轮对话</code></td></tr>
+      </tbody>
+    </table>
+
+    <h2>章节目录</h2>
+    <ul class="toc">
+      <li><a href="#ch1">第 1 章：环境、Python 与 PyTorch 基本操作</a></li>
+      <li><a href="#ch2">第 2 章：数据管道与训练闭环</a></li>
+      <li><a href="#ch3">第 3 章：深度学习数学与基础模型</a></li>
+      <li><a href="#ch4">第 4 章：优化、正则化与调参方法</a></li>
+      <li><a href="#ch5">第 5 章：CNN 与经典视觉网络</a></li>
+      <li><a href="#ch6">第 6 章：CV 实战、检测、分割与迁移</a></li>
+      <li><a href="#ch7">第 7 章：工程训练、GPU 与多卡</a></li>
+      <li><a href="#ch8">第 8 章：序列模型、RNN、GRU、LSTM</a></li>
+      <li><a href="#ch9">第 9 章：注意力、Transformer 与 BERT</a></li>
+      <li><a href="#ch10">第 10 章：大模型 Agent、RAG 与 API</a></li>
+    </ul>
+
+    <h2>分章讲义</h2>
+
+    <section id="ch1" class="chapter">
+      <h3><span class="tag">入门</span>第 1 章：环境、Python 与 PyTorch 基本操作</h3>
+      <div class="grid-2">
+        <div>
+          <p><strong>学习目标：</strong>完成 Anaconda/Jupyter/PyTorch 环境，知道 tensor 是什么，能在 notebook 中运行代码、查看形状、做基础运算。</p>
+          <ul>
+            <li>环境优先级：Python 版本 → Jupyter Notebook → PyTorch → CUDA/GPU 检查。</li>
+            <li>先学会张量的创建、索引、变形、广播、矩阵乘法，再进入网络层。</li>
+            <li>这章不要陷入安装细节；能稳定运行一个 notebook 就够。</li>
+          </ul>
+          <p><strong>检查点：</strong>能写出一个张量，打印 shape，完成矩阵乘法，解释 CPU/GPU 张量为什么不能随意混用。</p>
+        </div>
+        <aside class="notebooks">
+          <strong>对应视频：</strong><a href="https://www.bilibili.com/video/BV1hE411t7RN">土堆 PyTorch</a>；<a href="https://space.bilibili.com/1567748478/lists/358497?type=series">李沐 d2l</a><br>
+          <strong>原笔记：</strong>
+          <a href="notebooks/100_配置版本.html">100</a>
+          <a href="notebooks/101_Pytorch安装.html">101</a>
+          <a href="notebooks/102_Python两大法宝.html">102</a>
+          <a href="notebooks/201_配置版本.html">201</a>
+          <a href="notebooks/202_数据操作、数据预处理.html">202</a>
+          <a href="notebooks/203_线性代数.html">203</a>
+          <a href="notebooks/204_矩阵计算.html">204</a>
+          <a href="notebooks/205_自动求导.html">205</a>
+        </aside>
+      </div>
+    </section>
+
+    <section id="ch2" class="chapter">
+      <h3><span class="tag">入门</span>第 2 章：数据管道与训练闭环</h3>
+      <div class="grid-2">
+        <div>
+          <p><strong>学习目标：</strong>把“数据 → 模型 → 损失 → 反向传播 → 优化 → 验证”这一条链路跑通。</p>
+          <ul>
+            <li>数据侧：Dataset、DataLoader、transforms、torchvision 数据集。</li>
+            <li>监控侧：TensorBoard 记录 loss、图片、模型结构，帮助你观察训练过程。</li>
+            <li>训练侧：认识 <code>nn.Module</code>、<code>forward</code>、损失函数、优化器、保存和读取模型。</li>
+          </ul>
+          <p><strong>检查点：</strong>能在 CIFAR-10 上训练一个小网络，保存模型，再用验证图片跑一次推理。</p>
+        </div>
+        <aside class="notebooks">
+          <strong>对应视频：</strong><a href="https://www.bilibili.com/video/BV1hE411t7RN">土堆 PyTorch</a><br>
+          <strong>原笔记：</strong>
+          <a href="notebooks/103_Pytorch加载数据.html">103</a>
+          <a href="notebooks/104_Tensorboard使用.html">104</a>
+          <a href="notebooks/105_Transforms使用.html">105</a>
+          <a href="notebooks/106_torchvision数据集使用.html">106</a>
+          <a href="notebooks/107_Dataloader使用.html">107</a>
+          <a href="notebooks/108_nn.Module模块使用.html">108</a>
+          <a href="notebooks/115_损失函数与反向传播.html">115</a>
+          <a href="notebooks/116_优化器.html">116</a>
+          <a href="notebooks/118_网络模型保存与读取.html">118</a>
+          <a href="notebooks/119_完整模型训练套路.html">119</a>
+          <a href="notebooks/121_完整模型验证套路.html">121</a>
+        </aside>
+      </div>
+    </section>
+
+    <section id="ch3" class="chapter">
+      <h3><span class="tag green">基础</span>第 3 章：深度学习数学与基础模型</h3>
+      <div class="grid-2">
+        <div>
+          <p><strong>学习目标：</strong>理解线性回归、Softmax 分类、多层感知机、自动求导和神经网络前向/反向传播。</p>
+          <ul>
+            <li>线性回归让你理解“模型、参数、损失、优化”的最小闭环。</li>
+            <li>Softmax 回归把回归问题拓展为分类问题，是后续图像分类的基础。</li>
+            <li>MLP 让你看到激活函数和隐藏层如何提供非线性表达能力。</li>
+            <li>吴恩达课程适合补概念，李沐笔记适合补代码实现。</li>
+          </ul>
+          <p><strong>检查点：</strong>能不用高级封装写出线性回归训练循环，并能解释为什么分类任务常用交叉熵。</p>
+        </div>
+        <aside class="notebooks">
+          <strong>对应视频：</strong><a href="https://space.bilibili.com/1567748478/lists/358497?type=series">李沐 d2l</a>；<a href="https://www.bilibili.com/video/BV1FT4y1E74V">吴恩达深度学习</a><br>
+          <strong>原笔记：</strong>
+          <a href="notebooks/206_线性回归、优化算法.html">206</a>
+          <a href="notebooks/207_Softmax回归、损失函数、分类.html">207</a>
+          <a href="notebooks/208_多层感知机.html">208</a>
+          <a href="notebooks/301_课程1_第1周_深度学习概述.html">301</a>
+          <a href="notebooks/302_课程1_第2周a_神经网络基础之逻辑回归.html">302</a>
+          <a href="notebooks/303_课程1_第2周b_神经网络基础之Python与向量化.html">303</a>
+          <a href="notebooks/304_课程1_第3周_浅层神经网络.html">304</a>
+          <a href="notebooks/305_课程1_第4周_深层神经网络.html">305</a>
+        </aside>
+      </div>
+    </section>
+
+    <section id="ch4" class="chapter">
+      <h3><span class="tag green">基础</span>第 4 章：优化、正则化与调参方法</h3>
+      <div class="grid-2">
+        <div>
+          <p><strong>学习目标：</strong>学会诊断训练问题：欠拟合、过拟合、梯度消失/爆炸、学习率不合适、初始化不稳。</p>
+          <ul>
+            <li>正则化主线：权重衰退、丢弃法、数据增强、早停。</li>
+            <li>优化主线：SGD、Momentum、RMSProp、Adam、mini-batch。</li>
+            <li>调参主线：先划分训练/验证/测试，再做误差分析，最后改模型或改数据。</li>
+          </ul>
+          <p><strong>检查点：</strong>看到训练集准确率高、验证集准确率低时，能提出至少三种处理手段，并说明优先级。</p>
+        </div>
+        <aside class="notebooks">
+          <strong>对应视频：</strong><a href="https://space.bilibili.com/1567748478/lists/358497?type=series">李沐 d2l</a>；<a href="https://www.bilibili.com/video/BV1FT4y1E74V">吴恩达深度学习</a><br>
+          <strong>原笔记：</strong>
+          <a href="notebooks/209_模型选择、过拟合、欠拟合.html">209</a>
+          <a href="notebooks/210_权重衰退.html">210</a>
+          <a href="notebooks/211_丢弃法.html">211</a>
+          <a href="notebooks/212_数值稳定性、模型初始化、激活函数.html">212</a>
+          <a href="notebooks/314_课程2_第1周_深度学习的实用层面.html">314</a>
+          <a href="notebooks/315_课程2_第2周_优化算法.html">315</a>
+          <a href="notebooks/316_课程2_第3周_超参数调试、Batch正则化和编程框架.html">316</a>
+          <a href="notebooks/323_课程3_第1周_机器学习策略（上）.html">323</a>
+          <a href="notebooks/324_课程3_第2周_机器学习策略（下）.html">324</a>
+        </aside>
+      </div>
+    </section>
+
+    <section id="ch5" class="chapter">
+      <h3><span class="tag amber">CV 核心</span>第 5 章：CNN 与经典视觉网络</h3>
+      <div class="grid-2">
+        <div>
+          <p><strong>学习目标：</strong>理解卷积、填充、步幅、池化、多通道、1x1 卷积，以及 LeNet/AlexNet/VGG/NiN/GoogLeNet/ResNet 的结构演进。</p>
+          <ul>
+            <li>从“局部连接 + 权重共享”理解卷积为什么适合图像。</li>
+            <li>从 LeNet 到 ResNet，看网络为什么越来越深，以及残差连接解决了什么问题。</li>
+            <li>这章要把输入输出尺寸算熟：卷积核、padding、stride、channel 如何改变张量形状。</li>
+          </ul>
+          <p><strong>检查点：</strong>给定一张 <code>3x224x224</code> 图片和卷积参数，能手算输出尺寸；能画出 ResNet block 的数据流。</p>
+        </div>
+        <aside class="notebooks">
+          <strong>对应视频：</strong><a href="https://www.bilibili.com/video/BV1hE411t7RN">土堆 PyTorch</a>；<a href="https://space.bilibili.com/1567748478/lists/358497?type=series">李沐 d2l</a>；<a href="https://www.bilibili.com/video/BV1FT4y1E74V">吴恩达 CNN</a><br>
+          <strong>原笔记：</strong>
+          <a href="notebooks/109_卷积原理.html">109</a>
+          <a href="notebooks/110_卷积层.html">110</a>
+          <a href="notebooks/111_最大池化层.html">111</a>
+          <a href="notebooks/216_卷积层.html">216</a>
+          <a href="notebooks/217_卷积层里的填充和步幅.html">217</a>
+          <a href="notebooks/218_卷积层里的多输入多输出通道.html">218</a>
+          <a href="notebooks/219_池化层.html">219</a>
+          <a href="notebooks/220_经典神经网络LeNet.html">220</a>
+          <a href="notebooks/221_深度卷积神经网络AlexNet.html">221</a>
+          <a href="notebooks/222_使用块的网络VGG.html">222</a>
+          <a href="notebooks/226_残差神经网络ResNet.html">226</a>
+          <a href="notebooks/329_课程4_第1周_卷积神经网络基础.html">329</a>
+          <a href="notebooks/330_课程4_第2周_深度卷积模型.html">330</a>
+        </aside>
+      </div>
+    </section>
+
+    <section id="ch6" class="chapter">
+      <h3><span class="tag amber">CV 项目</span>第 6 章：CV 实战、检测、分割与迁移</h3>
+      <div class="grid-2">
+        <div>
+          <p><strong>学习目标：</strong>从图像分类走向更真实的视觉任务：迁移学习、数据增强、目标检测、语义分割、风格迁移。</p>
+          <ul>
+            <li>图像分类实战：CIFAR-10、狗品种识别，重点练数据处理、训练评估和提交思路。</li>
+            <li>检测主线：边界框 → 锚框 → R-CNN/SSD/YOLO → SSD 实现。</li>
+            <li>分割主线：转置卷积、FCN、语义分割数据集。</li>
+            <li>迁移学习是小数据场景的关键能力：先用预训练骨干，再微调任务头。</li>
+          </ul>
+          <p><strong>检查点：</strong>能说清楚分类、检测、分割三类任务的标签形式和模型输出有什么不同。</p>
+        </div>
+        <aside class="notebooks">
+          <strong>对应视频：</strong><a href="https://space.bilibili.com/1567748478/lists/358497?type=series">李沐 d2l</a>；<a href="https://www.bilibili.com/video/BV1FT4y1E74V">吴恩达 CNN</a><br>
+          <strong>原笔记：</strong>
+          <a href="notebooks/232_数据增广.html">232</a>
+          <a href="notebooks/233_微调.html">233</a>
+          <a href="notebooks/234_实战Kaggle比赛图像分类CIFAR10.html">234</a>
+          <a href="notebooks/235_实战Kaggle比赛狗的品种识别ImageNetDogs.html">235</a>
+          <a href="notebooks/236_物体检测和数据集.html">236</a>
+          <a href="notebooks/237_锚框.html">237</a>
+          <a href="notebooks/239_物体检测算法R-CNN、SSD、YOLO.html">239</a>
+          <a href="notebooks/240_SSD实现.html">240</a>
+          <a href="notebooks/241_语义分割和数据集.html">241</a>
+          <a href="notebooks/244_全连接卷积神经网络FCN.html">244</a>
+          <a href="notebooks/331_课程4_第3周_目标检测.html">331</a>
+          <a href="notebooks/332_课程4_第4周_人脸识别与神经风格迁移.html">332</a>
+        </aside>
+      </div>
+    </section>
+
+    <section id="ch7" class="chapter">
+      <h3><span class="tag violet">工程</span>第 7 章：工程训练、GPU 与多卡</h3>
+      <div class="grid-2">
+        <div>
+          <p><strong>学习目标：</strong>把单机实验升级到更稳定的训练工程：GPU、日志、模型保存、评估、多卡、分布式训练。</p>
+          <ul>
+            <li>先学会单 GPU：设备迁移、显存观察、训练速度比较。</li>
+            <li>再理解多 GPU：数据并行、梯度同步、批量大小与学习率关系。</li>
+            <li>最后看分布式训练：知道概念即可，初学阶段不强求完整部署。</li>
+          </ul>
+          <p><strong>检查点：</strong>能把模型和数据都迁移到 GPU，并解释为什么只迁移模型或只迁移数据会报错。</p>
+        </div>
+        <aside class="notebooks">
+          <strong>对应视频：</strong><a href="https://www.bilibili.com/video/BV1hE411t7RN">土堆 PyTorch</a>；<a href="https://space.bilibili.com/1567748478/lists/358497?type=series">李沐 d2l</a><br>
+          <strong>原笔记：</strong>
+          <a href="notebooks/120_利用GPU训练.html">120</a>
+          <a href="notebooks/215_使用购买GPU.html">215</a>
+          <a href="notebooks/227_深度学习硬件CPU和GPU.html">227</a>
+          <a href="notebooks/228_深度学习硬件TPU和其他.html">228</a>
+          <a href="notebooks/229_单机多卡并行.html">229</a>
+          <a href="notebooks/230_多GPU训练实现.html">230</a>
+          <a href="notebooks/231_分布式训练.html">231</a>
+        </aside>
+      </div>
+    </section>
+
+    <section id="ch8" class="chapter">
+      <h3><span class="tag red">NLP</span>第 8 章：序列模型、RNN、GRU、LSTM</h3>
+      <div class="grid-2">
+        <div>
+          <p><strong>学习目标：</strong>理解文本为什么要按序列建模，以及 RNN/GRU/LSTM 如何处理上下文依赖。</p>
+          <ul>
+            <li>先掌握文本预处理：分词、词表、序列截断/填充。</li>
+            <li>再学语言模型：用前文预测下一个 token。</li>
+            <li>RNN 是基本循环结构，GRU/LSTM 解决长依赖和梯度问题。</li>
+            <li>seq2seq 是机器翻译、摘要等生成任务的经典框架。</li>
+          </ul>
+          <p><strong>检查点：</strong>能解释隐藏状态的作用，能说明为什么 LSTM 比普通 RNN 更适合长文本。</p>
+        </div>
+        <aside class="notebooks">
+          <strong>对应视频：</strong><a href="https://space.bilibili.com/1567748478/lists/358497?type=series">李沐 d2l</a>；<a href="https://www.bilibili.com/video/BV1FT4y1E74V">吴恩达序列模型</a><br>
+          <strong>原笔记：</strong>
+          <a href="notebooks/246_序列模型.html">246</a>
+          <a href="notebooks/247_文本预处理.html">247</a>
+          <a href="notebooks/248_语言模型.html">248</a>
+          <a href="notebooks/249_循环神经网络RNN.html">249</a>
+          <a href="notebooks/250_循环神经网络RNN的实现.html">250</a>
+          <a href="notebooks/251_门控循环单元GRU.html">251</a>
+          <a href="notebooks/252_长短期记忆网络LSTM.html">252</a>
+          <a href="notebooks/256_编码器解码器架构.html">256</a>
+          <a href="notebooks/257_序列到序列学习seq2seq.html">257</a>
+          <a href="notebooks/342_课程5_第1周_循环神经网络RNN.html">342</a>
+          <a href="notebooks/343_课程5_第2周_特征向量表征.html">343</a>
+        </aside>
+      </div>
+    </section>
+
+    <section id="ch9" class="chapter">
+      <h3><span class="tag red">NLP 进阶</span>第 9 章：注意力、Transformer 与 BERT</h3>
+      <div class="grid-2">
+        <div>
+          <p><strong>学习目标：</strong>从 seq2seq 的瓶颈过渡到注意力机制，理解 Transformer 的自注意力、多头注意力、位置编码、预训练与微调。</p>
+          <ul>
+            <li>注意力的核心问题：当前输出应该重点看输入序列的哪些位置。</li>
+            <li>自注意力让序列内部任意位置直接交互，Transformer 由此摆脱循环结构。</li>
+            <li>BERT 代表“预训练 + 下游微调”的范式，为后续大模型学习打基础。</li>
+          </ul>
+          <p><strong>检查点：</strong>能用自己的话解释 query/key/value，能区分 Encoder-only 的 BERT 和生成式模型的用途差异。</p>
+        </div>
+        <aside class="notebooks">
+          <strong>对应视频：</strong><a href="https://space.bilibili.com/1567748478/lists/358497?type=series">李沐 d2l</a>；<a href="https://www.bilibili.com/video/BV1FT4y1E74V">吴恩达序列模型</a><br>
+          <strong>原笔记：</strong>
+          <a href="notebooks/258_束搜索.html">258</a>
+          <a href="notebooks/259_注意力机制.html">259</a>
+          <a href="notebooks/260_注意力分数.html">260</a>
+          <a href="notebooks/261_使用注意力机制的seq2seq.html">261</a>
+          <a href="notebooks/262_自注意力.html">262</a>
+          <a href="notebooks/263_Transformer.html">263</a>
+          <a href="notebooks/264_BERT预训练.html">264</a>
+          <a href="notebooks/265_BERT微调.html">265</a>
+          <a href="notebooks/344_课程5_第3周_序列模型和注意力机制.html">344</a>
+        </aside>
+      </div>
+    </section>
+
+    <section id="ch10" class="chapter">
+      <h3><span class="tag violet">Agent</span>第 10 章：大模型 Agent、RAG 与 API</h3>
+      <div class="grid-2">
+        <div>
+          <p><strong>学习目标：</strong>把前面的深度学习背景迁移到应用层：理解 API 调用、向量数据库、RAG 检索增强、LangChain、多轮对话。</p>
+          <ul>
+            <li>先理解大模型调用：API key、prompt、系统提示、流式输出、温度参数。</li>
+            <li>再理解 RAG：文档切分 → embedding → 向量库 → 相似度检索 → 拼接上下文 → 生成答案。</li>
+            <li>最后看 LangChain：它主要帮你组织 prompt、检索器、链路和工具调用。</li>
+          </ul>
+          <p><strong>检查点：</strong>能画出一个简单 RAG 流程，并说明“向量数据库存的不是原始理解，而是 embedding 表示”。</p>
+          <p class="warn">注意：仓库 README 中 400-409 的“大模型 Agent 视频讲解”没有给出具体 URL，本讲义只标注原仓库未提供。</p>
+        </div>
+        <aside class="notebooks">
+          <strong>对应视频：</strong>原仓库未提供具体链接<br>
+          <strong>原笔记：</strong>
+          <a href="notebooks/400_配置版本.html">400</a>
+          <a href="notebooks/401_核心概念与流程.html">401</a>
+          <a href="notebooks/402_向量数据库.html">402</a>
+          <a href="notebooks/403_基于向量的语义检索RAG.html">403</a>
+          <a href="notebooks/404_代码分析与展望.html">404</a>
+          <a href="notebooks/405_使用LangChain构建RAG.html">405</a>
+          <a href="notebooks/406_手写python大模型.html">406</a>
+          <a href="notebooks/407_PythonAPI环境安装.html">407</a>
+          <a href="notebooks/408_API基本参数.html">408</a>
+          <a href="notebooks/409_多轮对话.html">409</a>
+        </aside>
+      </div>
+    </section>
+
+    <h2>学习路径图</h2>
+    <div class="path" aria-label="学习路径流程图">
+      <div class="node"><b>1. 环境与张量</b><small>Python / Jupyter / PyTorch / tensor / 自动求导</small></div>
+      <div class="node"><b>2. 训练闭环</b><small>Dataset / DataLoader / nn.Module / loss / optimizer / save-load</small></div>
+      <div class="node"><b>3. 基础模型</b><small>线性回归 / Softmax / MLP / 反向传播</small></div>
+      <div class="node"><b>4. 训练诊断</b><small>过拟合 / 正则化 / 初始化 / BatchNorm / 调参</small></div>
+      <div class="node"><b>5. CNN 主线</b><small>卷积 / 池化 / LeNet / VGG / ResNet</small></div>
+      <div class="node"><b>6. CV 项目</b><small>分类 / 检测 / 分割 / 迁移学习 / 风格迁移</small></div>
+      <div class="node"><b>7. 工程能力</b><small>GPU / 多卡 / 分布式 / 日志 / 验证</small></div>
+      <div class="node"><b>8. 序列模型</b><small>文本预处理 / RNN / GRU / LSTM / seq2seq</small></div>
+      <div class="node"><b>9. Transformer</b><small>注意力 / 自注意力 / Transformer / BERT</small></div>
+      <div class="node"><b>10. Agent 应用</b><small>API / RAG / 向量库 / LangChain / 多轮对话</small></div>
+    </div>
+
+    <h2>12 周学习计划</h2>
+    <div class="plan">
+      <div class="plan-row"><div class="week">第 1 周</div><div><strong>环境和张量基本功</strong><br>跑通 Jupyter、PyTorch、tensor 操作、自动求导。</div><div class="muted">交付：一份环境检查 notebook。</div></div>
+      <div class="plan-row"><div class="week">第 2 周</div><div><strong>数据管道与训练闭环</strong><br>完成 Dataset/DataLoader、transforms、TensorBoard、保存读取模型。</div><div class="muted">交付：CIFAR-10 小模型训练日志。</div></div>
+      <div class="plan-row"><div class="week">第 3 周</div><div><strong>线性模型与 MLP</strong><br>学习线性回归、Softmax、MLP、交叉熵、前向/反向传播。</div><div class="muted">交付：手写训练循环和分类实验。</div></div>
+      <div class="plan-row"><div class="week">第 4 周</div><div><strong>优化与泛化</strong><br>学习欠拟合/过拟合、权重衰退、Dropout、初始化、BatchNorm、优化器。</div><div class="muted">交付：同一模型的调参对比表。</div></div>
+      <div class="plan-row"><div class="week">第 5 周</div><div><strong>CNN 基础</strong><br>卷积、步幅、填充、池化、多通道、1x1 卷积，手算尺寸。</div><div class="muted">交付：卷积尺寸计算笔记。</div></div>
+      <div class="plan-row"><div class="week">第 6 周</div><div><strong>经典 CNN 网络</strong><br>LeNet、AlexNet、VGG、NiN、GoogLeNet、ResNet，理解结构演进。</div><div class="muted">交付：ResNet block 图解和实现。</div></div>
+      <div class="plan-row"><div class="week">第 7 周</div><div><strong>图像分类项目</strong><br>数据增强、微调、CIFAR-10/Kaggle 图像分类实战。</div><div class="muted">交付：一个完整图像分类 repo 或 notebook。</div></div>
+      <div class="plan-row"><div class="week">第 8 周</div><div><strong>检测、分割与视觉任务扩展</strong><br>目标检测、锚框、SSD、YOLO 思想、语义分割、FCN。</div><div class="muted">交付：检测/分割任务流程图。</div></div>
+      <div class="plan-row"><div class="week">第 9 周</div><div><strong>工程训练能力</strong><br>GPU、多卡、分布式概念、训练速度和显存观察。</div><div class="muted">交付：CPU/GPU 训练耗时对比。</div></div>
+      <div class="plan-row"><div class="week">第 10 周</div><div><strong>NLP 序列模型</strong><br>文本预处理、语言模型、RNN、GRU、LSTM、seq2seq。</div><div class="muted">交付：字符级语言模型或机器翻译小实验。</div></div>
+      <div class="plan-row"><div class="week">第 11 周</div><div><strong>注意力与 Transformer</strong><br>注意力分数、自注意力、多头注意力、Transformer、BERT 预训练和微调。</div><div class="muted">交付：Q/K/V 解释笔记和 BERT 微调流程。</div></div>
+      <div class="plan-row"><div class="week">第 12 周</div><div><strong>Agent / RAG 应用</strong><br>API 参数、系统提示、多轮对话、向量数据库、RAG、LangChain。</div><div class="muted">交付：一个最小 RAG 问答 demo。</div></div>
+    </div>
+
+    <h2>使用建议</h2>
+    <ul>
+      <li><strong>每天节奏：</strong>30% 看视频，40% 跑 notebook，20% 自己复述，10% 整理错误。</li>
+      <li><strong>不要跳过代码：</strong>这份资料的价值在于 notebook 实操，只看视频会很快忘。</li>
+      <li><strong>每章都要有产出：</strong>哪怕只是一个尺寸计算表、一张流程图、一个小实验，也比“看完了”更可靠。</li>
+      <li><strong>遇到公式卡住：</strong>先会用、会调、会解释现象；第二轮再补严格推导。</li>
+      <li><strong>最终项目建议：</strong>选择一个图像分类/检测项目和一个 RAG 问答项目，分别作为 CV 与 Agent 的阶段成果。</li>
+    </ul>
+  </main>
+</body>
+</html>
